@@ -6,12 +6,13 @@ import java.util.Arrays;
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
 
-    Integer size = size();
+    int size = 0;
 
     void clear() {
         for (int i = 0; i < size; i++) {
             storage[i] = null;
         }
+        size = 0;
     }
 
 
@@ -52,10 +53,6 @@ public class ArrayStorage {
     }
 
     int size() {
-        int i = 0;
-        while (storage[i] != null) {
-            i++;
-        }
-        return i;
+        return size;
     }
 }
