@@ -16,7 +16,7 @@ public class ArrayStorage {
 
 
     void save(Resume r) {
-        if ((r != null) || (!r.uuid.equals("null"))) {
+        if (r.uuid != null) {
             int size = size();
             storage[size] = r;
         }
@@ -36,7 +36,7 @@ public class ArrayStorage {
         int i;
         int size = size();
         for (i = 0; i < size; i++) {
-            if (storage[i].uuid.equals(uuid)) {
+            if (uuid.equals(storage[i].uuid)) {
                 for (int j = i; j < size; j++) {
                     storage[j] = storage[j + 1];
                 }
