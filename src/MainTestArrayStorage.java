@@ -21,6 +21,20 @@ public class MainTestArrayStorage {
 
         System.out.println("Get dummy: " + ARRAY_STORAGE.get("dummy"));
 
+        System.out.println("Тестирование метода update...");
+        printAll();
+        Resume r4 = new Resume();
+        r4.uuid = "uuid2";
+        System.out.println("Вызываем update со значением uuid, уже существующем в хранилище...");
+        ARRAY_STORAGE.update(r4);
+        printAll();
+        Resume r5 = new Resume();
+        r5.uuid = "uuid5";
+        System.out.println("Вызываем update со значением uuid, которого нет в хранилище...");
+        ARRAY_STORAGE.update(r5);
+        printAll();
+        System.out.println("Тестирование метода update завершено.");
+
         printAll();
         ARRAY_STORAGE.delete(r1.uuid);
         printAll();
