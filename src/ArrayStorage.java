@@ -15,34 +15,63 @@ public class ArrayStorage {
         size = 0;
     }
 
+    private int findResume(String uuid) {
+        for (int i = 0; i < size; i++) {
+            if ((uuid.equals(storage[i].uuid)) && (uuid != null)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void update(Resume r) {
+        //TODO check if resume present
+        int indexResume = findResume(r.uuid);
+        if (indexResume > -1) {
+            storage[indexResume] = r;
+        } else {
+            System.out.println("Resume is missing in the storage");
+        }
+    }
+
 
     void save(Resume r) {
-        if (r.uuid != null) {
-            storage[size] = r;
-            size++;
+        //TODO check if storage ArrayIndexOutOfBound
+        if (size < 10000) {
+            //TODO check if resume not present
+            if (findResume(r.uuid) == -1) {
+                storage[size] = r;
+                size++;
+            } else {
+                System.out.println("Resume already present in the storage");
+            }
+        } else {
+            System.out.println("ArrayIndexOutOfBoundException");
         }
     }
 
     Resume get(String uuid) {
-        for (int i = 0; i < size; i++) {
-            if (storage[i].uuid.equals(uuid)) {
-                return storage[i];
-            }
+        //TODO check if resume present
+        int indexResume = findResume(uuid);
+        if (indexResume > -1) {
+            return storage[indexResume];
+        } else {
+            System.out.println("Resume is missing in the storage");
+            return null;
         }
-        return null;
     }
 
     void delete(String uuid) {
-        int i;
-        for (i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].uuid)) {
-                for (int j = i; j < size; j++) {
-                    storage[j] = storage[j + 1];
-                }
-                size--;
-                break;
-            }
+        //TODO check if resume present
+        int indexResume = findResume(uuid);
+        if (indexResume > -1) {
+            storage[indexResume] = storage[size - 1];
+            storage[size - 1] = null;
+            size--;
+        } else {
+            System.out.println("Resume is missing in the storage");
         }
+
     }
 
     /**
