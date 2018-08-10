@@ -3,11 +3,11 @@ import java.util.Arrays;
 public class ArrayStorage {
 
     int size = 0;
-    final int STORAGE_LENGTH = 10000;
+    final static int STORAGE_LENGTH = 10000;
     Resume[] storage = new Resume[STORAGE_LENGTH];
 
     void clear() {
-        Arrays.fill(storage, null);
+        Arrays.fill(storage, 0,size-1,null);
         size = 0;
     }
 
