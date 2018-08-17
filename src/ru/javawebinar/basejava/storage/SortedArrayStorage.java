@@ -9,16 +9,12 @@ public class SortedArrayStorage extends AbstractArrayStorage {
 
     protected void saveResume(Resume r, int index) {
         int low = -index - 1;
-        for (int i = size - 1; i >= low; i--) {
-            storage[i + 1] = storage[i];
-        }
+        System.arraycopy(storage, low, storage, low + 1, size - low);
         storage[low] = r;
     }
 
     protected void deleteResume(String uuid, int index) {
-        for (int i = index; i < size; i++) {
-            storage[i] = storage[i + 1];
-        }
+        System.arraycopy(storage, index + 1, storage, index, size - index - 1);
     }
 
 
