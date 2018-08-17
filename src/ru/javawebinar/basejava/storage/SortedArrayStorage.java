@@ -22,7 +22,6 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
 
-
     protected int getIndex(String uuid) {
         Resume searchKey = new Resume();
         searchKey.setUuid(uuid);
