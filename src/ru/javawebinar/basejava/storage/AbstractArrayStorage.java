@@ -72,6 +72,7 @@ public abstract class AbstractArrayStorage implements Storage {
         return storage[index];
     }
 
+
     protected abstract void fillDeletedElement(int index);
 
     protected abstract void insertElement(Resume r, int index);
