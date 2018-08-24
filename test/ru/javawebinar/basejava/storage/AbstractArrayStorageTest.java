@@ -10,7 +10,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractArrayStorageTest {
 
-    private Storage storage;
     private static final int SIZE_FOR_TEST = 3;
     private static final int STORAGE_LIMIT = 10000;
     private static final String UUID_1 = "uuid1";
@@ -22,6 +21,7 @@ public abstract class AbstractArrayStorageTest {
     private static final String UUID_new = "uuid4";
     private static final Resume RESUME_new = new Resume(UUID_new);
     private static final Resume RESUME_0 = new Resume("uuid0");
+    private Storage storage;
 
     public AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
@@ -52,23 +52,23 @@ public abstract class AbstractArrayStorageTest {
     public void update() {
         storage.update(RESUME_2);
         Assert.assertEquals(SIZE_FOR_TEST, storage.size());
-        Assert.assertTrue(RESUME_2==storage.get(UUID_2));
+        Assert.assertTrue(RESUME_2 == storage.get(UUID_2));
     }
 
     @Test
     public void getAll() {
         Resume[] arrayResume = storage.getAll();
-        Assert.assertEquals(arrayResume[0],RESUME_1);
-        Assert.assertEquals(arrayResume[1],RESUME_2);
-        Assert.assertEquals(arrayResume[2],RESUME_3);
+        Assert.assertEquals(arrayResume[0], RESUME_1);
+        Assert.assertEquals(arrayResume[1], RESUME_2);
+        Assert.assertEquals(arrayResume[2], RESUME_3);
     }
 
     @Test(expected = ExistStorageException.class)
     public void save() {
         try {
-        storage.save(RESUME_new);
-        Assert.assertEquals(SIZE_FOR_TEST+1, storage.size());
-        Assert.assertEquals(storage.get(UUID_new),RESUME_new);
+            storage.save(RESUME_new);
+            Assert.assertEquals(SIZE_FOR_TEST + 1, storage.size());
+            Assert.assertEquals(storage.get(UUID_new), RESUME_new);
         } catch (Exception e) {
             Assert.fail("Error saving element..." + e.getMessage());
         }
@@ -78,8 +78,8 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = NotExistStorageException.class)
     public void delete() {
         try {
-        storage.delete(UUID_2);
-        Assert.assertEquals(SIZE_FOR_TEST-1, storage.size());
+            storage.delete(UUID_2);
+            Assert.assertEquals(SIZE_FOR_TEST - 1, storage.size());
         } catch (Exception e) {
             Assert.fail("Error deleting element..." + e.getMessage());
         }
@@ -89,9 +89,9 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = NotExistStorageException.class)
     public void get() {
         try {
-        Assert.assertEquals(RESUME_1, storage.get(UUID_1));
-        Assert.assertEquals(RESUME_2, storage.get(UUID_2));
-        Assert.assertEquals(RESUME_3, storage.get(UUID_3));
+            Assert.assertEquals(RESUME_1, storage.get(UUID_1));
+            Assert.assertEquals(RESUME_2, storage.get(UUID_2));
+            Assert.assertEquals(RESUME_3, storage.get(UUID_3));
         } catch (Exception e) {
             Assert.fail("Error getting element..." + e.getMessage());
         }
