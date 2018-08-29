@@ -1,10 +1,11 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.Resume;
-
-import java.util.*;
+import ru.javawebinar.basejava.storage.MapStorage;
 
 public class MainCollections {
+    private final static MapStorage STORAGE = new MapStorage();
+
     private static final String UUID_1 = "uuid1";
     private static final Resume RESUME_1 = new Resume(UUID_1);
 
@@ -18,6 +19,28 @@ public class MainCollections {
     private static final Resume RESUME_4 = new Resume(UUID_4);
 
     public static void main(String[] args) {
+        STORAGE.save(RESUME_1);
+        STORAGE.save(RESUME_2);
+        STORAGE.save(RESUME_3);
+
+        for (Resume r : STORAGE.getAll()) {
+            System.out.println(r);
+        }
+
+        STORAGE.delete(UUID_1);
+
+        System.out.println("size = " + STORAGE.size());
+
+        STORAGE.update(RESUME_3);
+
+        for (Resume r : STORAGE.getAll()) {
+            System.out.println(r);
+        }
+
+        System.out.println(STORAGE.get(UUID_2));
+
+
+      /*
         Collection<Resume> collection = new ArrayList<>();
         collection.add(RESUME_1);
         collection.add(RESUME_2);
@@ -39,8 +62,8 @@ public class MainCollections {
             }
         }
         System.out.println(collection.toString());
-
-
+*/
+/*
         Map<String, Resume> map = new HashMap<>();
         map.put(UUID_1, RESUME_1);
         map.put(UUID_2, RESUME_2);
@@ -53,6 +76,7 @@ public class MainCollections {
 
         for (Map.Entry<String, Resume> entry : map.entrySet()) {
             System.out.println(entry.getValue());
-        }
+
+        }*/
     }
 }
