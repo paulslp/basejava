@@ -10,14 +10,14 @@ public class ArrayStorage extends AbstractArrayStorage {
 
 
     @Override
-    protected void deleteElement(String uuid, int index) {
-        storage[index] = storage[size - 1];
+    protected void deleteElement(String uuid, Object searchKey) {
+        storage[getIndex(searchKey)] = storage[size - 1];
         storage[size - 1] = null;
         size--;
     }
 
     @Override
-    protected void insertElement(Resume r, int index) {
+    protected void insertElement(Resume r, Object searchKey) {
         if (size == STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", r.getUuid());
         } else {
@@ -27,12 +27,12 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void updateElement(Resume r, int index) {
-        storage[index] = r;
+    protected void updateElement(Resume r, Object searchKey) {
+        storage[getIndex(searchKey)] = r;
     }
 
     @Override
-    protected int getIndex(String uuid) {
+    protected Object getSearchKey(String uuid) {
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 return i;
@@ -40,4 +40,6 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
         return -1;
     }
+
+
 }

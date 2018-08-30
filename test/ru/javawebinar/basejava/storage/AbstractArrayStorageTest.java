@@ -47,6 +47,7 @@ public abstract class AbstractArrayStorageTest {
         assertSize(3);
     }
 
+
     @Test
     public void clear() throws Exception {
         storage.clear();

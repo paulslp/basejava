@@ -27,8 +27,17 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     }
 
-    protected Resume getElement(String uuid, int index) {
-        return storage[index];
+    protected int getIndex(Object searchKey) {
+        return (int) searchKey;
+    }
+
+    @Override
+    protected Resume findElement(Object searchKey) {
+        return storage[getIndex(searchKey)];
+    }
+
+    protected boolean checkExistingElement(Object searchKey) {
+        return getIndex(searchKey) >= 0;
     }
 
 }
