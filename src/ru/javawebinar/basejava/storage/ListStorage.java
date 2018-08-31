@@ -25,12 +25,9 @@ public class ListStorage extends AbstractStorage {
         return storage.size();
     }
 
-    protected int getIndex(Object searchKey) {
-        return ((Integer) searchKey).intValue();
-    }
     @Override
     protected void deleteElement(String uuid, Object searchKey) {
-        storage.remove(getIndex(searchKey));
+        storage.remove((int) searchKey);
     }
 
     @Override
@@ -40,11 +37,11 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void updateElement(Resume r, Object searchKey) {
-        storage.set(getIndex(searchKey), r);
+        storage.set((int) searchKey, r);
     }
 
     @Override
-    protected Object getSearchKey(String uuid) {
+    protected Integer getSearchKey(String uuid) {
         int i = 0;
         for (Resume r : storage) {
             if (Objects.equals(r.getUuid(), uuid)) {
@@ -57,11 +54,11 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected Resume findElement(Object searchKey) {
-        return storage.get(getIndex(searchKey));
+        return storage.get((int) searchKey);
     }
 
     @Override
     protected boolean checkExistingElement(Object searchKey) {
-        return getIndex(searchKey) >= 0;
+        return (int) searchKey >= 0;
     }
 }

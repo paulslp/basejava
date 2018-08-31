@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -27,17 +28,26 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     }
 
-    protected int getIndex(Object searchKey) {
-        return (int) searchKey;
-    }
+
 
     @Override
     protected Resume findElement(Object searchKey) {
-        return storage[getIndex(searchKey)];
+        return storage[(Integer) searchKey];
     }
 
     protected boolean checkExistingElement(Object searchKey) {
-        return getIndex(searchKey) >= 0;
+        return (Integer) searchKey >= 0;
+    }
+
+    @Override
+    protected void updateElement(Resume r, Object searchKey) {
+        storage[(int) searchKey] = r;
+    }
+
+    protected void checkOverflow(Resume r) {
+        if (size == STORAGE_LIMIT) {
+            throw new StorageException("Storage overflow", r.getUuid());
+        }
     }
 
 }
