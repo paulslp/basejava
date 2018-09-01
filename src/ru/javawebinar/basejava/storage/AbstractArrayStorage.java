@@ -30,9 +30,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected void deleteElement(String uuid, Object searchKey) {
-        if (deleteResume(uuid, searchKey)) {
-            size--;
-        }
+        deleteResume(uuid, searchKey);
+        storage[size - 1] = null;
+        size--;
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         }
     }
 
-    protected abstract boolean deleteResume(String uuid, Object searchKey);
+    protected abstract void deleteResume(String uuid, Object searchKey);
 
     protected abstract void insertResume(Resume r, Object searchKey);
 

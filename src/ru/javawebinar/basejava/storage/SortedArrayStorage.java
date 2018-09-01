@@ -7,14 +7,12 @@ import java.util.Arrays;
 public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected boolean deleteResume(String uuid, Object searchKey) {
+    protected void deleteResume(String uuid, Object searchKey) {
         int index = (int) searchKey;
         int numMoved = size - index - 1;
         if (numMoved > 0) {
             System.arraycopy(storage, index + 1, storage, index, numMoved);
-            return true;
         }
-        return false;
     }
 
     @Override

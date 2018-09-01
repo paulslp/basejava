@@ -9,10 +9,9 @@ public class ArrayStorage extends AbstractArrayStorage {
 
 
     @Override
-    protected boolean deleteResume(String uuid, Object searchKey) {
+    protected void deleteResume(String uuid, Object searchKey) {
         storage[(int) searchKey] = storage[size - 1];
         storage[size - 1] = null;
-        return true;
     }
 
     @Override
