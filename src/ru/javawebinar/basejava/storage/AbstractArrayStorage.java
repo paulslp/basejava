@@ -28,15 +28,28 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     }
 
+    @Override
+    protected void deleteElement(String uuid, Object searchKey) {
+        if (deleteResume(uuid, searchKey)) {
+            size--;
+        }
+    }
+
+    @Override
+    protected void insertElement(Resume r, Object searchKey) {
+        checkOverflow(r);
+        insertResume(r, searchKey);
+        size++;
+    }
 
 
     @Override
     protected Resume findElement(Object searchKey) {
-        return storage[(Integer) searchKey];
+        return storage[(int) searchKey];
     }
 
     protected boolean checkExistingElement(Object searchKey) {
-        return (Integer) searchKey >= 0;
+        return (int) searchKey >= 0;
     }
 
     @Override
@@ -49,5 +62,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
             throw new StorageException("Storage overflow", r.getUuid());
         }
     }
+
+    protected abstract boolean deleteResume(String uuid, Object searchKey);
+
+    protected abstract void insertResume(Resume r, Object searchKey);
 
 }

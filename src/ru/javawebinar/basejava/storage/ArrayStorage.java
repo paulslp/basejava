@@ -9,17 +9,15 @@ public class ArrayStorage extends AbstractArrayStorage {
 
 
     @Override
-    protected void deleteElement(String uuid, Object searchKey) {
+    protected boolean deleteResume(String uuid, Object searchKey) {
         storage[(int) searchKey] = storage[size - 1];
         storage[size - 1] = null;
-        size--;
+        return true;
     }
 
     @Override
-    protected void insertElement(Resume r, Object searchKey) {
-        checkOverflow(r);
+    protected void insertResume(Resume r, Object searchKey) {
         storage[size] = r;
-        size++;
     }
 
 
