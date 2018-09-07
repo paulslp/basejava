@@ -1,46 +1,39 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
+    /*
+        private static class ResumeComparator implements Comparator<Resume> {
+            @Override
+            public int compare(Resume o1, Resume o2) {
+                return o1.getUuid().compareTo(o2.getUuid());
+            }
+        }
+    */
+    protected static final Comparator<Resume> RESUME_COMPARATOR_UUID = (o1, o2) -> o1.getUuid().compareTo(o2.getUuid());
 
     @Override
-    protected void deleteElement(String uuid, Object searchKey) {
-        int index = getIndex(searchKey);
+    protected void fillDeletedElement(int index) {
         int numMoved = size - index - 1;
         if (numMoved > 0) {
             System.arraycopy(storage, index + 1, storage, index, numMoved);
-            size--;
         }
     }
 
     @Override
-    protected void insertElement(Resume r, Object searchKey) {
-//      http://codereview.stackexchange.com/questions/36221/binary-search-for-inserting-in-array#answer-36239
-        if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        } else {
-            int index = getIndex(searchKey);
-            int insertIdx = -index - 1;
-            System.arraycopy(storage, insertIdx, storage, insertIdx + 1, size - insertIdx);
-            storage[insertIdx] = r;
-            size++;
-        }
+    protected void insertElement(Resume r, int index) {
+        int insertIdx = -index - 1;
+        System.arraycopy(storage, insertIdx, storage, insertIdx + 1, size - insertIdx);
+        storage[insertIdx] = r;
     }
 
     @Override
-    protected void updateElement(Resume r, Object searchKey) {
-        storage[(Integer) searchKey] = r;
+    protected Integer getSearchKey(String uuid) {
+        Resume searchKey = new Resume(uuid, "");
+        return Arrays.binarySearch(storage, 0, size, searchKey, RESUME_COMPARATOR_UUID);
     }
-
-    @Override
-    protected Object getSearchKey(String uuid) {
-        Resume searchKey = new Resume(uuid);
-        return Arrays.binarySearch(storage, 0, size, searchKey);
-    }
-
-
 }

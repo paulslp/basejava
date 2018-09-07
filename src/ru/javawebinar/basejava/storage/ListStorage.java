@@ -4,64 +4,57 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-/**
- * List based storage for Resumes
- */
 public class ListStorage extends AbstractStorage {
-    protected List<Resume> storage = new ArrayList<Resume>();
-
-    public void clear() {
-        storage.clear();
-    }
-
-    public Resume[] getAll() {
-        return storage.toArray(new Resume[storage.size()]);
-
-    }
-
-    public int size() {
-        return storage.size();
-    }
-
-    protected int getIndex(Object searchKey) {
-        return ((Integer) searchKey).intValue();
-    }
-    @Override
-    protected void deleteElement(String uuid, Object searchKey) {
-        storage.remove(getIndex(searchKey));
-    }
+    private List<Resume> list = new ArrayList<>();
 
     @Override
-    protected void insertElement(Resume r, Object searchKey) {
-        storage.add(r);
-    }
-
-    @Override
-    protected void updateElement(Resume r, Object searchKey) {
-        storage.set(getIndex(searchKey), r);
-    }
-
-    @Override
-    protected Object getSearchKey(String uuid) {
-        int i = 0;
-        for (Resume r : storage) {
-            if (Objects.equals(r.getUuid(), uuid)) {
+    protected Integer getSearchKey(String uuid) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUuid().equals(uuid)) {
                 return i;
             }
-            i++;
         }
-        return -1;
+        return null;
     }
 
     @Override
-    protected Resume findElement(Object searchKey) {
-        return storage.get(getIndex(searchKey));
+    protected boolean isExist(Object searchKey) {
+        return searchKey != null;
     }
 
     @Override
-    protected boolean checkExistingElement(Object searchKey) {
-        return getIndex(searchKey) >= 0;
+    protected void doUpdate(Resume r, Object searchKey) {
+        list.set((Integer) searchKey, r);
+    }
+
+    @Override
+    protected void doSave(Resume r, Object searchKey) {
+        list.add(r);
+    }
+
+    @Override
+    protected Resume doGet(Object searchKey) {
+        return list.get((Integer) searchKey);
+    }
+
+    @Override
+    protected void doDelete(Object searchKey) {
+        list.remove(((Integer) searchKey).intValue());
+    }
+
+    @Override
+    public void clear() {
+        list.clear();
+    }
+
+    @Override
+    public List<Resume> getAll() {
+        return list;
+    }
+
+    @Override
+    public int size() {
+        return list.size();
     }
 }

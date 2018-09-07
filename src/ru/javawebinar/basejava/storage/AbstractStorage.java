@@ -4,55 +4,66 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractStorage implements Storage {
 
 
+    protected abstract Object getSearchKey(String uuid);
+
+    protected abstract void doUpdate(Resume r, Object searchKey);
+
+    protected abstract boolean isExist(Object searchKey);
+
+    protected abstract void doSave(Resume r, Object searchKey);
+
+    protected abstract Resume doGet(Object searchKey);
+
+    protected abstract void doDelete(Object searchKey);
+
+    protected abstract List<Resume> getAll();
+
     public void update(Resume r) {
-        Object key = getSearchKey(r.getUuid());
-        if (!checkExistingElement(key)) {
-            throw new NotExistStorageException(r.getUuid());
-        } else {
-            updateElement(r, key);
-        }
+        Object searchKey = getExistedSearchKey(r.getUuid());
+        doUpdate(r, searchKey);
     }
 
-
     public void save(Resume r) {
-        Object key = getSearchKey(r.getUuid());
-        if (checkExistingElement(key)) {
-            throw new ExistStorageException(r.getUuid());
-        } else {
-            insertElement(r, key);
-        }
+        Object searchKey = getNotExistedSearchKey(r.getUuid());
+        doSave(r, searchKey);
     }
 
     public void delete(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (!checkExistingElement(key)) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            deleteElement(uuid, key);
-        }
+        Object searchKey = getExistedSearchKey(uuid);
+        doDelete(searchKey);
     }
 
     public Resume get(String uuid) {
-        Object key = getSearchKey(uuid);
-        if (!checkExistingElement(key)) {
-            throw new NotExistStorageException(uuid);
-        }
-        return findElement(key);
+        Object searchKey = getExistedSearchKey(uuid);
+        return doGet(searchKey);
     }
 
-    protected abstract void deleteElement(String uuid, Object key);
+    private Object getExistedSearchKey(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (!isExist(searchKey)) {
+            throw new NotExistStorageException(uuid);
+        }
+        return searchKey;
+    }
 
-    protected abstract void insertElement(Resume r, Object key);
+    private Object getNotExistedSearchKey(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (isExist(searchKey)) {
+            throw new ExistStorageException(uuid);
+        }
+        return searchKey;
+    }
 
-    protected abstract void updateElement(Resume r, Object key);
 
-    protected abstract Object getSearchKey(String uuid);
-
-    protected abstract Resume findElement(Object searchKey);
-
-    protected abstract boolean checkExistingElement(Object searchKey);
+    public List<Resume> getAllSorted() {
+        List<Resume> resumes = getAll();
+        Collections.sort(resumes, Resume.RESUME_COMPARATOR_FULLNAME_UUID);
+        return resumes;
+    }
 }
