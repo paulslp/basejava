@@ -67,5 +67,4 @@ public abstract class AbstractStorage implements Storage {
     }
 
 
-
 }
