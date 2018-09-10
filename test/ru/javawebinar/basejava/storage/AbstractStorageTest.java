@@ -58,23 +58,24 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() throws Exception {
-        Resume newResume = new Resume(UUID_1, "name1");
+        Resume newResume = new Resume(UUID_1, "nameNew");
         storage.update(newResume);
         assertTrue(newResume == storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() throws Exception {
-        storage.get("dummy");
+        Resume resume = new Resume("dummy", "dummy");
+        storage.update(resume);
     }
 
     @Test
     public void getAllSorted() throws Exception {
-        List<Resume> rList = storage.getAllSorted();
-        assertEquals(3, ((List) rList).size());
-        assertEquals(RESUME_1, rList.get(0));
-        assertEquals(RESUME_2, rList.get(1));
-        assertEquals(RESUME_3, rList.get(2));
+        List<Resume> resumeList = storage.getAllSorted();
+        assertEquals(3, resumeList.size());
+        assertEquals(RESUME_1, resumeList.get(0));
+        assertEquals(RESUME_2, resumeList.get(1));
+        assertEquals(RESUME_3, resumeList.get(2));
     }
 
     @Test
