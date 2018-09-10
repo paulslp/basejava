@@ -8,7 +8,7 @@ import java.util.UUID;
  */
 public class Resume {
 
-    public static final Comparator<Resume> RESUME_COMPARATOR_FULLNAME_UUID = (o1, o2) -> (o1.getFullName().compareTo(o2.getFullName()) != 0) ? o1.getFullName().compareTo(o2.getFullName()) : o1.getUuid().compareTo(o2.getUuid());
+    public static Comparator<Resume> RESUME_COMPARATOR_FULLNAME_UUID = (o1, o2) -> (o1.getFullName().compareTo(o2.getFullName()) != 0) ? o1.getFullName().compareTo(o2.getFullName()) : o1.getUuid().compareTo(o2.getUuid());
 
     // Unique identifier
     private final String uuid;

@@ -7,51 +7,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Map based storage for Resumes
+ */
 public class MapUuidStorage extends AbstractStorage {
-    private Map<String, Resume> map = new HashMap<>();
 
-    @Override
-    protected Resume getSearchKey(String uuid) {
-        return map.get(uuid);
-    }
 
-    @Override
-    protected void doUpdate(Resume r, Object resume) {
-        map.put(r.getUuid(), r);
-    }
+    protected Map<String, Resume> storage = new HashMap<>();
 
-    @Override
-    protected boolean isExist(Object resume) {
-        return resume != null;
-    }
 
-    @Override
-    protected void doSave(Resume r, Object resume) {
-        doUpdate(r, resume);
-    }
-
-    @Override
-    protected Resume doGet(Object resume) {
-        return (Resume) resume;
-    }
-
-    @Override
-    protected void doDelete(Object resume) {
-        map.remove(((Resume) resume).getUuid());
-    }
-
-    @Override
-    public void clear() {
-        map.clear();
-    }
-
-    @Override
-    public List<Resume> getAll() {
-        return new ArrayList<Resume>(map.values());
-    }
-
-    @Override
     public int size() {
-        return map.size();
+        return storage.size();
+    }
+
+    public void clear() {
+        storage.clear();
+    }
+
+    public List<Resume> getAll() {
+        return new ArrayList<Resume>(storage.values());
+    }
+
+
+    @Override
+    protected void doDelete(Object searchKey) {
+        storage.remove(searchKey);
+    }
+
+    @Override
+    protected void doSave(Resume resume, Object searchKey) {
+        storage.put(resume.getUuid(), resume);
+    }
+
+    @Override
+    protected void doUpdate(Resume resume, Object searchKey) {
+        doSave(resume, searchKey);
+    }
+
+    @Override
+    protected String getSearchKey(String uuid) {
+        return uuid;
+    }
+
+    @Override
+    protected Resume doGet(Object uuid) {
+        return storage.get((String) uuid);
+    }
+
+    @Override
+    protected boolean isExist(Object searchKey) {
+        return storage.containsKey(searchKey);
     }
 }
