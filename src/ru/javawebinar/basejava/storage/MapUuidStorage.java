@@ -2,47 +2,10 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Map based storage for Resumes
- */
-public class MapUuidStorage extends AbstractStorage {
-
-
-    protected Map<String, Resume> storage = new HashMap<>();
-
-
-    public int size() {
-        return storage.size();
-    }
-
-    public void clear() {
-        storage.clear();
-    }
-
-    public List<Resume> getAll() {
-        return new ArrayList<Resume>(storage.values());
-    }
-
-
-    @Override
-    protected void doDelete(Object searchKey) {
-        storage.remove(searchKey);
-    }
-
-    @Override
-    protected void doSave(Resume resume, Object searchKey) {
-        storage.put(resume.getUuid(), resume);
-    }
-
-    @Override
-    protected void doUpdate(Resume resume, Object searchKey) {
-        doSave(resume, searchKey);
-    }
+public class MapUuidStorage extends AbstractStorage<String> {
+    private Map<String, Resume> map = new HashMap<>();
 
     @Override
     protected String getSearchKey(String uuid) {
@@ -50,12 +13,42 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume doGet(Object uuid) {
-        return storage.get((String) uuid);
+    protected void doUpdate(Resume r, String uuid) {
+        map.put(uuid, r);
     }
 
     @Override
-    protected boolean isExist(Object searchKey) {
-        return storage.containsKey(searchKey);
+    protected boolean isExist(String uuid) {
+        return map.containsKey(uuid);
+    }
+
+    @Override
+    protected void doSave(Resume r, String uuid) {
+        map.put(uuid, r);
+    }
+
+    @Override
+    protected Resume doGet(String uuid) {
+        return map.get(uuid);
+    }
+
+    @Override
+    protected void doDelete(String uuid) {
+        map.remove(uuid);
+    }
+
+    @Override
+    public void clear() {
+        map.clear();
+    }
+
+    @Override
+    public List<Resume> doCopyAll() {
+        return new ArrayList<>(map.values());
+    }
+
+    @Override
+    public int size() {
+        return map.size();
     }
 }

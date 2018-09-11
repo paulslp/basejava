@@ -1,17 +1,16 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.Comparator;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * ru.javawebinar.basejava.model.Resume class
  */
-public class Resume {
-
-    public static Comparator<Resume> RESUME_COMPARATOR_FULLNAME_UUID = (o1, o2) -> (o1.getFullName().compareTo(o2.getFullName()) != 0) ? o1.getFullName().compareTo(o2.getFullName()) : o1.getUuid().compareTo(o2.getUuid());
+public class Resume implements Comparable<Resume> {
 
     // Unique identifier
     private final String uuid;
+
     private final String fullName;
 
     public Resume(String fullName) {
@@ -19,14 +18,11 @@ public class Resume {
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
+        Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
     }
-
-    public String getFullName() {
-        return fullName;
-    }
-
 
     public String getUuid() {
         return uuid;
@@ -41,6 +37,7 @@ public class Resume {
 
         if (!uuid.equals(resume.uuid)) return false;
         return fullName.equals(resume.fullName);
+
     }
 
     @Override
@@ -52,7 +49,12 @@ public class Resume {
 
     @Override
     public String toString() {
-        return uuid;
+        return uuid + '(' + fullName + ')';
+    }
 
+    @Override
+    public int compareTo(Resume o) {
+        int cmp = fullName.compareTo(o.fullName);
+        return cmp != 0 ? cmp : uuid.compareTo(o.uuid);
     }
 }
