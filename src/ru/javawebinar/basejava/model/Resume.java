@@ -8,17 +8,6 @@ import java.util.UUID;
  */
 public class Resume implements Comparable<Resume> {
 
-    // Unique identifier
-    private final String uuid;
-    private final String fullName;
-    private ListRecord<Record2Field> contacts;
-    private String objective;
-    private String personal;
-    private ListRecord<String> achievement;
-    private ListRecord<String> qualification;
-    private ListRecord<Record4Field> experience;
-    private ListRecord<Record3Field> education;
-
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
         Objects.requireNonNull(fullName, "fullName must not be null");
@@ -39,26 +28,15 @@ public class Resume implements Comparable<Resume> {
         return qualification;
     }
 
-    public ListRecord<Record2Field> getContacts() {
-        return contacts;
-    }
-
-    public ListRecord<Record4Field> getExperience() {
-        return experience;
-    }
-
-    public ListRecord<Record3Field> getEducation() {
-        return education;
-    }
+    private final String uuid;
+    private final String fullName;
+    private ListRecord<RecordContact> contacts;
 
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
-
-    public void addContact(String field1, String field2) {
-        contacts.add(new Record2Field(field1, field2));
-    }
+    private String objective;
 
     public String getUuid() {
         return uuid;
@@ -121,12 +99,33 @@ public class Resume implements Comparable<Resume> {
     public void addQualification(String qualificationString) {
         qualification.add(qualificationString);
     }
+    private String personal;
+    private ListRecord<String> achievement;
+    private ListRecord<String> qualification;
+    private ListRecord<RecordExperience> experience;
+    private ListRecord<RecordEducation> education;
 
-    public void addExperience(String field1, String field2, String field3, String field4) {
-        experience.add(new Record4Field(field1, field2, field3, field4));
+    public ListRecord<RecordContact> getContacts() {
+        return contacts;
     }
 
-    public void addEducation(String field1, String field2, String field3) {
-        education.add(new Record3Field(field1, field2, field3));
+    public ListRecord<RecordExperience> getExperience() {
+        return experience;
+    }
+
+    public ListRecord<RecordEducation> getEducation() {
+        return education;
+    }
+
+    public void addContact(String type, String value) {
+        contacts.add(new RecordContact(type, value));
+    }
+
+    public void addExperience(String place, String period, String titul, String data) {
+        experience.add(new RecordExperience(place, period, titul, data));
+    }
+
+    public void addEducation(String place, String period, String titul) {
+        education.add(new RecordEducation(place, period, titul));
     }
 }
