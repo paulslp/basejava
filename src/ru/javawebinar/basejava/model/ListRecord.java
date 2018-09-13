@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListRecord<T> {
+
     private List<T> listRecord = new ArrayList<>();
 
 

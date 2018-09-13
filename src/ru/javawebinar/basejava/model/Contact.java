@@ -1,10 +1,10 @@
 package ru.javawebinar.basejava.model;
 
-public class RecordContact {
+public class Contact {
     private String type;
     private String value;
 
-    public RecordContact(String type, String value) {
+    public Contact(String type, String value) {
         this.type = type;
         this.value = value;
     }

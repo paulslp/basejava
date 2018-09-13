@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -7,6 +8,17 @@ import java.util.UUID;
  * ru.javawebinar.basejava.model.Resume class
  */
 public class Resume implements Comparable<Resume> {
+
+    private final String uuid;
+    private final String fullName;
+    private ListRecord<Contact> contacts;
+    private String objective;
+    private String personal;
+    private ListRecord<String> achievement;
+    private ListRecord<String> qualification;
+    private ListRecord<PlaceInfo> experience;
+    private ListRecord<PlaceInfo> education;
+
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
@@ -20,6 +32,10 @@ public class Resume implements Comparable<Resume> {
         this.education = new ListRecord<>();
     }
 
+    public Resume(String fullName) {
+        this(UUID.randomUUID().toString(), fullName);
+    }
+
     public ListRecord<String> getAchievement() {
         return achievement;
     }
@@ -28,18 +44,61 @@ public class Resume implements Comparable<Resume> {
         return qualification;
     }
 
-    private final String uuid;
-    private final String fullName;
-    private ListRecord<RecordContact> contacts;
-
-
-    public Resume(String fullName) {
-        this(UUID.randomUUID().toString(), fullName);
-    }
-    private String objective;
-
     public String getUuid() {
         return uuid;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getObjective() {
+        return objective;
+    }
+
+    public void setObjective(String objective) {
+        this.objective = objective;
+    }
+
+    public String getPersonal() {
+        return personal;
+    }
+
+    public void setPersonal(String personal) {
+        this.personal = personal;
+    }
+
+    public ListRecord<Contact> getContacts() {
+        return contacts;
+    }
+
+    public ListRecord<PlaceInfo> getExperience() {
+        return experience;
+    }
+
+    public ListRecord<PlaceInfo> getEducation() {
+        return education;
+    }
+
+
+    public void addContact(String type, String value) {
+        contacts.add(new Contact(type, value));
+    }
+
+    public void addExperience(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
+        experience.add(new PlaceInfo(place, site, dateStart, dateEnd, position, text));
+    }
+
+    public void addEducation(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position) {
+        education.add(new PlaceInfo(place, site, dateStart, dateEnd, position, ""));
+    }
+
+    public void addAchievement(String achievementString) {
+        achievement.add(achievementString);
+    }
+
+    public void addQualification(String qualificationString) {
+        qualification.add(qualificationString);
     }
 
     @Override
@@ -72,60 +131,8 @@ public class Resume implements Comparable<Resume> {
         return cmp != 0 ? cmp : uuid.compareTo(o.uuid);
     }
 
-    public String getFullName() {
-        return fullName;
-    }
 
-    public String getObjective() {
-        return objective;
-    }
 
-    public void setObjective(String objective) {
-        this.objective = objective;
-    }
 
-    public String getPersonal() {
-        return personal;
-    }
 
-    public void setPersonal(String personal) {
-        this.personal = personal;
-    }
-
-    public void addAchievement(String achievementString) {
-        achievement.add(achievementString);
-    }
-
-    public void addQualification(String qualificationString) {
-        qualification.add(qualificationString);
-    }
-    private String personal;
-    private ListRecord<String> achievement;
-    private ListRecord<String> qualification;
-    private ListRecord<RecordExperience> experience;
-    private ListRecord<RecordEducation> education;
-
-    public ListRecord<RecordContact> getContacts() {
-        return contacts;
-    }
-
-    public ListRecord<RecordExperience> getExperience() {
-        return experience;
-    }
-
-    public ListRecord<RecordEducation> getEducation() {
-        return education;
-    }
-
-    public void addContact(String type, String value) {
-        contacts.add(new RecordContact(type, value));
-    }
-
-    public void addExperience(String place, String period, String titul, String data) {
-        experience.add(new RecordExperience(place, period, titul, data));
-    }
-
-    public void addEducation(String place, String period, String titul) {
-        education.add(new RecordEducation(place, period, titul));
-    }
 }

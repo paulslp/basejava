@@ -4,6 +4,8 @@ import org.junit.Test;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.SectionType;
 
+import java.time.LocalDate;
+
 public class FillResumeTest {
 
     @Test
@@ -17,11 +19,11 @@ public class FillResumeTest {
         resume.addAchievement("с 2011 года: программист SQL (MS SQL Server 2008,2000).");
         resume.addQualification("Java Frameworks: Struts 1.3, Spring 3.0");
         resume.addQualification("MS SQL, PostgreSQL, DB2");
-        resume.addExperience("ООО Фирма", "03-2013-Сейчас", "Главный специалист", "Реализация утилиты резервного копирования");
-        resume.addExperience("ООО Радио", "03-2013-Сейчас", "Инженер-программист", "Реализация записи в базу данных MS SQL Server 2008 данных журналов контроллеров");
-        resume.addEducation("Академия АйТи", "11/2016        ", "IT Service Management");
-        resume.addEducation("Академия АйТи", "11/2006        ", "Программирование баз данных SQL Server 2000");
-        resume.addEducation("Ижевский Государственный Технический Университет", "09/2001-07/2006", "Факультет Прикладная математика. Квалификация инженер-математик");
+        resume.addExperience("ООО Фирма", "www.firma.ru",LocalDate.parse("2013-03-01"),LocalDate.now(), "Главный специалист", "Реализация утилиты резервного копирования");
+        resume.addExperience("ООО Радио", "www.radio.ru",LocalDate.parse("2011-03-01"), LocalDate.parse("2013-03-01"),"Инженер-программист", "Реализация записи в базу данных MS SQL Server 2008 данных журналов контроллеров");
+        resume.addEducation("Академия АйТи", "www.it.ru",LocalDate.parse("2016-11-01"), LocalDate.parse("2016-11-20"),"ITIL");
+        resume.addEducation("Академия АйТи","www.it.ru", LocalDate.parse("2006-11-01"), LocalDate.parse("2006-11-20"),"Программирование баз данных SQL Server 2000");
+        resume.addEducation("Ижевский Государственный Технический Университет","www.istu.ru",LocalDate.parse("2001-09-01"), LocalDate.parse("2006-07-31"), "Факультет Прикладная математика. Квалификация инженер-математик");
 
         SectionType.valueOf("CONTACTS").setContent(resume.getContacts().getAll());
         SectionType.valueOf("OBJECTIVE").setContent(resume.getObjective());
