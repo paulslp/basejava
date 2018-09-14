@@ -1,32 +1,26 @@
 package ru.javawebinar.basejava.model;
 
 public enum SectionType {
-    CONTACTS("Контакты", null),
-    PERSONAL("Личные качества", null),
-    OBJECTIVE("Позиция", null),
-    ACHIEVEMENT("Достижения", null),
-    QUALIFICATIONS("Квалификация", null),
-    EXPERIENCE("Опыт работы", null),
-    EDUCATION("Образование", null);
+    PERSONAL("Личные качества"),
+    OBJECTIVE("Позиция"),
+    ACHIEVEMENT("Достижения"),
+    QUALIFICATIONS("Квалификация"),
+    EXPERIENCE("Опыт работы"),
+    EDUCATION("Образование");
+
+
 
     private String title;
     private String content;
 
 
-    SectionType(String title, String content) {
+    SectionType(String title) {
         this.title = title;
-        this.content = content;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getContent() {
-        return content;
-    }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

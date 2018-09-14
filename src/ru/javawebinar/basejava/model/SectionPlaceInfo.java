@@ -2,17 +2,16 @@ package ru.javawebinar.basejava.model;
 
 import java.time.LocalDate;
 
-public class PlaceInfo {
+public class SectionPlaceInfo extends SectionValue{
 
-    private String name;
     private String site;
     private LocalDate dateStart;
     private LocalDate dateEnd;
     private String position;
     private String text;
 
-    public PlaceInfo(String name, String site, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
-        this.name = name;
+    public SectionPlaceInfo(String name, String site, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
+        super(name);
         this.site = site;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
@@ -26,14 +25,6 @@ public class PlaceInfo {
 
     public void setPosition(String position) {
         this.position = position;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getSite() {

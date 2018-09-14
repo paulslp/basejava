@@ -17,19 +17,28 @@ public class TestSingleton {
 
     public static void main(String[] args) {
 
+        TestSingleton.getInstance().toString();
         Singleton instance = Singleton.valueOf("INSTANCE");
         System.out.println(instance.ordinal());
 
+        for (Singleton type : Singleton.values()) {
+            System.out.println(type);
+        }
+
+        Singleton.valueOf("INSTANCE");
+
+        SectionType type1;
 
 
 
         for (SectionType type : SectionType.values()) {
             System.out.println(type.getTitle());
-            System.out.println(type.getContent());
         }
+
+
     }
 
     public enum Singleton {
-        INSTANCE
+        INSTANCE, INSTANCE2
     }
 }

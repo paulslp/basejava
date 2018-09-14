@@ -1,6 +1,8 @@
 package ru.javawebinar.basejava.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,10 +16,10 @@ public class Resume implements Comparable<Resume> {
     private ListRecord<Contact> contacts;
     private String objective;
     private String personal;
-    private ListRecord<String> achievement;
-    private ListRecord<String> qualification;
-    private ListRecord<PlaceInfo> experience;
-    private ListRecord<PlaceInfo> education;
+    private List<String> achievement;
+    private List<String> qualification;
+    private List<SectionPlaceInfo> experience;
+    private List<SectionPlaceInfo> education;
 
 
     public Resume(String uuid, String fullName) {
@@ -26,21 +28,21 @@ public class Resume implements Comparable<Resume> {
         this.uuid = uuid;
         this.fullName = fullName;
         this.contacts = new ListRecord<>();
-        this.achievement = new ListRecord<>();
-        this.qualification = new ListRecord<>();
-        this.experience = new ListRecord<>();
-        this.education = new ListRecord<>();
+        this.achievement = new ArrayList<>();
+        this.qualification = new ArrayList<>();
+        this.experience = new ArrayList<>();
+        this.education = new ArrayList<>();
     }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
 
-    public ListRecord<String> getAchievement() {
+    public List<String> getAchievement() {
         return achievement;
     }
 
-    public ListRecord<String> getQualification() {
+    public List<String> getQualification() {
         return qualification;
     }
 
@@ -72,11 +74,11 @@ public class Resume implements Comparable<Resume> {
         return contacts;
     }
 
-    public ListRecord<PlaceInfo> getExperience() {
+    public List<SectionPlaceInfo> getExperience() {
         return experience;
     }
 
-    public ListRecord<PlaceInfo> getEducation() {
+    public List<SectionPlaceInfo> getEducation() {
         return education;
     }
 
@@ -86,11 +88,11 @@ public class Resume implements Comparable<Resume> {
     }
 
     public void addExperience(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
-        experience.add(new PlaceInfo(place, site, dateStart, dateEnd, position, text));
+        experience.add(new SectionPlaceInfo(place, site, dateStart, dateEnd, position, text));
     }
 
     public void addEducation(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position) {
-        education.add(new PlaceInfo(place, site, dateStart, dateEnd, position, ""));
+        education.add(new SectionPlaceInfo(place, site, dateStart, dateEnd, position, ""));
     }
 
     public void addAchievement(String achievementString) {
