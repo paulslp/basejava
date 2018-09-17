@@ -17,6 +17,6 @@ public class SectionValue {
 
     @Override
     public String toString(){
-        return new StringBuilder(getName()).append("\r\n").toString();
+        return new StringBuilder(getName()).toString();
     }
 }

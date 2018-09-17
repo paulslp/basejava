@@ -1,49 +1,38 @@
 package ru.javawebinar.basejava.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
-/**
- * ru.javawebinar.basejava.model.Resume class
- */
+
 public class Resume implements Comparable<Resume> {
 
     private final String uuid;
     private final String fullName;
-    private ListRecord<Contact> contacts;
-    private String objective;
-    private String personal;
-    private List<String> achievement;
-    private List<String> qualification;
-    private List<SectionPlaceInfo> experience;
-    private List<SectionPlaceInfo> education;
-
+    private HashMap<ContactType, String> mapContacts;
+    private HashMap<SectionType, List> mapSections;
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
         Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
-        this.contacts = new ListRecord<>();
-        this.achievement = new ArrayList<>();
-        this.qualification = new ArrayList<>();
-        this.experience = new ArrayList<>();
-        this.education = new ArrayList<>();
+        this.mapContacts = new HashMap<>();
+        this.mapSections = new HashMap<>();
+        for (SectionType type : SectionType.values()) {
+            this.mapSections.put(type, new ArrayList<>());
+        }
     }
+
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
 
-    public List<String> getAchievement() {
-        return achievement;
+    public HashMap<ContactType, String> getMapContacts() {
+        return mapContacts;
     }
 
-    public List<String> getQualification() {
-        return qualification;
+    public HashMap<SectionType, List> getMapSections() {
+        return mapSections;
     }
 
     public String getUuid() {
@@ -54,53 +43,13 @@ public class Resume implements Comparable<Resume> {
         return fullName;
     }
 
-    public String getObjective() {
-        return objective;
+
+    public void addSection(SectionType type, SectionValue value) {
+        mapSections.get(type).add(value);
     }
 
-    public void setObjective(String objective) {
-        this.objective = objective;
-    }
-
-    public String getPersonal() {
-        return personal;
-    }
-
-    public void setPersonal(String personal) {
-        this.personal = personal;
-    }
-
-    public ListRecord<Contact> getContacts() {
-        return contacts;
-    }
-
-    public List<SectionPlaceInfo> getExperience() {
-        return experience;
-    }
-
-    public List<SectionPlaceInfo> getEducation() {
-        return education;
-    }
-
-
-    public void addContact(String type, String value) {
-        contacts.add(new Contact(type, value));
-    }
-
-    public void addExperience(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
-        experience.add(new SectionPlaceInfo(place, site, dateStart, dateEnd, position, text));
-    }
-
-    public void addEducation(String place, String site, LocalDate dateStart, LocalDate dateEnd, String position) {
-        education.add(new SectionPlaceInfo(place, site, dateStart, dateEnd, position, ""));
-    }
-
-    public void addAchievement(String achievementString) {
-        achievement.add(achievementString);
-    }
-
-    public void addQualification(String qualificationString) {
-        qualification.add(qualificationString);
+    public void addContact(ContactType type, String value) {
+        mapContacts.put(type, value);
     }
 
     @Override
@@ -110,15 +59,18 @@ public class Resume implements Comparable<Resume> {
 
         Resume resume = (Resume) o;
 
-        if (!uuid.equals(resume.uuid)) return false;
-        return fullName.equals(resume.fullName);
-
+        if (uuid != null ? !uuid.equals(resume.uuid) : resume.uuid != null) return false;
+        if (fullName != null ? !fullName.equals(resume.fullName) : resume.fullName != null) return false;
+        if (mapContacts != null ? !mapContacts.equals(resume.mapContacts) : resume.mapContacts != null) return false;
+        return mapSections != null ? mapSections.equals(resume.mapSections) : resume.mapSections == null;
     }
 
     @Override
     public int hashCode() {
-        int result = uuid.hashCode();
-        result = 31 * result + fullName.hashCode();
+        int result = uuid != null ? uuid.hashCode() : 0;
+        result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
+        result = 31 * result + (mapContacts != null ? mapContacts.hashCode() : 0);
+        result = 31 * result + (mapSections != null ? mapSections.hashCode() : 0);
         return result;
     }
 

@@ -19,6 +19,15 @@ public class SectionPlaceInfo extends SectionValue{
         this.text = text;
     }
 
+    public SectionPlaceInfo(String name, String site, LocalDate dateStart, LocalDate dateEnd, String position) {
+        super(name);
+        this.site = site;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.position = position;
+        this.text = "";
+    }
+
     public String getPosition() {
         return position;
     }

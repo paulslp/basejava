@@ -9,7 +9,6 @@ public enum SectionType {
     EDUCATION("Образование");
 
 
-
     private String title;
     private String content;
 
