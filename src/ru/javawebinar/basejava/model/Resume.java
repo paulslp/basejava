@@ -1,39 +1,37 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Objects;
+import java.util.UUID;
 
 
 public class Resume implements Comparable<Resume> {
 
     private final String uuid;
     private final String fullName;
-    private HashMap<ContactType, String> mapContacts;
-    private HashMap<SectionType, List> mapSections;
+    private EnumMap<ContactType, String> mapContacts = new EnumMap<ContactType, String>(ContactType.class);
+    private EnumMap<SectionType, Section> mapSections = new EnumMap<SectionType, Section>(SectionType.class);
+
+    public Resume(String fullName) {
+        this(UUID.randomUUID().toString(), fullName);
+    }
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
         Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
-        this.mapContacts = new HashMap<>();
-        this.mapSections = new HashMap<>();
-        for (SectionType type : SectionType.values()) {
-            this.mapSections.put(type, new ArrayList<>());
-        }
+    }
+
+    public String getContact(ContactType type) {
+        return mapContacts.get(type);
+    }
+
+    public Section getSection(SectionType type) {
+        return mapSections.get(type);
     }
 
 
-    public Resume(String fullName) {
-        this(UUID.randomUUID().toString(), fullName);
-    }
-
-    public HashMap<ContactType, String> getMapContacts() {
-        return mapContacts;
-    }
-
-    public HashMap<SectionType, List> getMapSections() {
-        return mapSections;
-    }
 
     public String getUuid() {
         return uuid;
@@ -43,9 +41,8 @@ public class Resume implements Comparable<Resume> {
         return fullName;
     }
 
-
-    public void addSection(SectionType type, SectionValue value) {
-        mapSections.get(type).add(value);
+    public void addSection(SectionType type, Section value) {
+        mapSections.put(type, value);
     }
 
     public void addContact(ContactType type, String value) {

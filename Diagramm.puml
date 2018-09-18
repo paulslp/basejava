@@ -1,4 +1,43 @@
 @startuml
+Class Resume {
+- String uuid
+- String fullName
+- mapContacts
+- mapSections
+
++getMapContacts()
++getMapSections()
++getUuid()
++getFullName()
++addSection(SectionType type, SectionValue value)
++addContact(ContactType type, String value)
+}
+
+Class SectionValue {
+-name
++getName()
++toString()
+}
+
+Class SectionPlaceInfo{
+-site
+-dateStart
+-dateEnd
+-position
+-text
++getPosition()
++getSite()
++getDateStart()
++getDateEnd()
++getText()
++toString()
+}
+
+Class ContactType {
+-title
++String getTitle()
+}
+
 Resume *--SectionValue
 SectionValue <|-- SectionPlaceInfo
 @enduml
