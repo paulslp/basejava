@@ -4,32 +4,39 @@ Class Resume {
 - String fullName
 - mapContacts
 - mapSections
-
-+getMapContacts()
-+getMapSections()
++getContact()
++getSection()
 +getUuid()
 +getFullName()
 +addSection(SectionType type, SectionValue value)
 +addContact(ContactType type, String value)
 }
 
-Class SectionValue {
--name
-+getName()
+Class ListSection{
+-listItems
++equals(Object o)
++hashCode()
 +toString()
 }
 
-Class SectionPlaceInfo{
+Interface Section{
+}
+
+Class TextSection{
+-name
++equals(Object o)
++hashCode()
++toString()
+}
+
+Class Organization{
 -site
 -dateStart
 -dateEnd
 -position
 -text
-+getPosition()
-+getSite()
-+getDateStart()
-+getDateEnd()
-+getText()
++equals(Object o)
++hashCode()
 +toString()
 }
 
@@ -38,6 +45,16 @@ Class ContactType {
 +String getTitle()
 }
 
-Resume *--SectionValue
-SectionValue <|-- SectionPlaceInfo
+Class SectionType {
+-title
++String getTitle()
+}
+
+Resume *-- SectionType
+Resume *-- ContactType
+Resume *-- ListSection
+Resume *-- TextSection
+ListSection *-- Organization
+Section <|-- ListSection
+Section <|-- TextSection
 @enduml

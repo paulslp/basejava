@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.model;
 
-public abstract class Section {
-    public abstract Object getSection();
+public interface Section {
 
-    public abstract void append(String value);
 }

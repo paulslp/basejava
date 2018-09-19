@@ -1,23 +1,15 @@
 package ru.javawebinar.basejava.model;
 
-public class TextSection extends Section{
+import java.util.Objects;
+
+public class TextSection implements Section {
 
     private String text;
 
     public TextSection(String text) {
+        Objects.requireNonNull(text, "text must not be null");
         this.text = text;
     }
-
-    public Object getSection() {
-        return text;
-    }
-
-
-    @Override
-    public void append(String value) {
-        text = value.toString();
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -26,13 +18,20 @@ public class TextSection extends Section{
 
         TextSection that = (TextSection) o;
 
-        return text != null ? text.equals(that.text) : that.text == null;
+        return text.equals(that.text);
     }
 
     @Override
     public int hashCode() {
-        return text != null ? text.hashCode() : 0;
+        return text.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return text.toString();
+    }
+
+
 
 
 }
