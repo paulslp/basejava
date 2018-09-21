@@ -1,29 +1,32 @@
 package ru.javawebinar.basejava.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class Organization{
-    private String name;
-    private Site site;
-    private LocalDate dateStart;
-    private LocalDate dateEnd;
-    private String position;
-    private String text;
+/**
+ * gkislin
+ * 19.07.2016
+ */
+public class Organization {
+    private final Link homePage;
 
+    private List<PersonalData> personalDataList;
 
-    public Organization(String name, String siteName, String url, LocalDate dateStart, LocalDate dateEnd, String position, String text) {
+    public Organization(String name, String url, LocalDate startDate, LocalDate endDate, String title, String description) {
         Objects.requireNonNull(name, "name must not be null");
-        Objects.requireNonNull(dateStart, "dateStart must not be null");
-        Objects.requireNonNull(dateEnd, "dateEnd must not be null");
-        Objects.requireNonNull(position, "position must not be null");
+        Objects.requireNonNull(startDate, "startDate must not be null");
+        Objects.requireNonNull(endDate, "endDate must not be null");
+        Objects.requireNonNull(title, "title must not be null");
 
-        this.name = name;
-        this.site = new Site(siteName, url);
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-        this.position = position;
-        this.text = text;
+        this.homePage = new Link(name, url);
+        personalDataList = new ArrayList<>();
+        addPersonalData(startDate,endDate,title,description);
+    }
+
+    public void addPersonalData(LocalDate startDate, LocalDate endDate, String title, String description){
+        personalDataList.add(new PersonalData(startDate,endDate,title,description));
     }
 
     @Override
@@ -33,28 +36,27 @@ public class Organization{
 
         Organization that = (Organization) o;
 
-        if (!name.equals(that.name)) return false;
-        if (!site.equals(that.site)) return false;
-        if (!dateStart.equals(that.dateStart)) return false;
-        if (!dateEnd.equals(that.dateEnd)) return false;
-        if (!position.equals(that.position)) return false;
-        return text != null ? text.equals(that.text) : that.text == null;
+        if (!homePage.equals(that.homePage)) return false;
+        return personalDataList.equals(that.personalDataList);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + site.hashCode();
-        result = 31 * result + dateStart.hashCode();
-        result = 31 * result + dateEnd.hashCode();
-        result = 31 * result + position.hashCode();
-        result = 31 * result + (text != null ? text.hashCode() : 0);
+        int result = homePage.hashCode();
+        result = 31 * result + personalDataList.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(name).append(" (сайт ").append(site.toString()).append(")\r\n").append(dateStart).append(" - ").append(dateEnd).append("      ").append(position).append("\r\n").append("                             ").append(text).append("\r\n").toString();
-    }
+        String resultPersonalData="";
 
+        for (PersonalData persData: personalDataList){
+            resultPersonalData = resultPersonalData +persData.toString()+ ";";
+        }
+        return "Organization{" +
+                "homePage=" + homePage + "," +
+                 resultPersonalData +
+                '}';
+    }
 }

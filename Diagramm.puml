@@ -50,10 +50,18 @@ Class SectionType {
 +String getTitle()
 }
 
+class Site {
+-name
+-String url
++equals(Object o)
++hashCode()
++toString()
+}
+
+Organization *-- Site
 Resume *-- SectionType
 Resume *-- ContactType
-Resume *-- ListSection
-Resume *-- TextSection
+Resume *-- Section
 ListSection *-- Organization
 Section <|-- ListSection
 Section <|-- TextSection

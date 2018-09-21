@@ -3,12 +3,25 @@ package ru.javawebinar.basejava.model;
 import java.util.List;
 import java.util.Objects;
 
-public class ListSection implements Section {
-    private List<String> listItems;
+/**
+ * gkislin
+ * 14.07.2016
+ */
+public class ListSection extends Section {
+    private final List<String> items;
 
-    public ListSection(List<String> listItems) {
-        Objects.requireNonNull(listItems, "listItems must not be null");
-        this.listItems = listItems;
+    public ListSection(List<String> items) {
+        Objects.requireNonNull(items, "items must not be null");
+        this.items = items;
+    }
+
+    public List<String> getItems() {
+        return items;
+    }
+
+    @Override
+    public String toString() {
+        return items.toString();
     }
 
     @Override
@@ -18,16 +31,12 @@ public class ListSection implements Section {
 
         ListSection that = (ListSection) o;
 
-        return listItems.equals(that.listItems);
+        return items.equals(that.items);
+
     }
 
     @Override
     public int hashCode() {
-        return listItems.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return listItems.toString();
+        return items.hashCode();
     }
 }

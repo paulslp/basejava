@@ -1,16 +1,13 @@
 package ru.javawebinar.basejava;
 
-import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FillResumeTest {
 
     public static Resume fillResume(Resume resume) {
-        resume.addContact(ContactType.PHONE, "8-999-999-99-99");
+    /*    resume.addContact(ContactType.PHONE, "8-999-999-99-99");
         resume.addContact(ContactType.EMAIL, "paulslp@yandex.ru");
         resume.addContact(ContactType.SKYPE, "paulslp");
 
@@ -37,12 +34,12 @@ public class FillResumeTest {
         listEducation.add(String.valueOf(new Organization("Академия АйТи", "Сайт Академия IT", "www.it.ru", LocalDate.parse("2006-11-01"), LocalDate.parse("2006-11-20"), "Программирование баз данных SQL Server 2000", "")));
         listEducation.add(String.valueOf(new Organization("Ижевский Государственный Технический Университет", "Сайт ИжГТУ", "www.istu.ru", LocalDate.parse("2001-09-01"), LocalDate.parse("2006-07-31"), "Факультет Прикладная математика. Квалификация инженер-математик", "")));
         resume.addSection(SectionType.EDUCATION, new ListSection(listEducation));
-
+*/
         return resume;
     }
 
     public static void printResume(Resume resume) {
-        System.out.println(resume.getFullName());
+   /*     System.out.println(resume.getFullName());
 
         for (ContactType contactType : ContactType.values()) {
             System.out.print(contactType.getTitle() + "  ");
@@ -54,7 +51,7 @@ public class FillResumeTest {
             System.out.println(type.getTitle());
             System.out.println(resume.getSection(type).toString());
             System.out.println("");
-        }
+        }*/
 
     }
 
