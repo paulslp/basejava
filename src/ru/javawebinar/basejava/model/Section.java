@@ -1,5 +1,5 @@
 package ru.javawebinar.basejava.model;
 
 
- public interface Section {
+public interface Section {
 }

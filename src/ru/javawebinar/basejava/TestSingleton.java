@@ -30,7 +30,6 @@ public class TestSingleton {
         SectionType type1;
 
 
-
         for (SectionType type : SectionType.values()) {
             System.out.println(type.getTitle());
         }

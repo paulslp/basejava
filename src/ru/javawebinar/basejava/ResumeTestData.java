@@ -1,7 +1,7 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
-import ru.javawebinar.basejava.model.Resume;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 public class ResumeTestData {
 
 
-    public static  Resume fillResume(Resume resume) {
+    public static Resume fillResume(Resume resume) {
 
         resume.addContact(ContactType.PHONE, "8-999-999-99-99");
         resume.addContact(ContactType.MAIL, "paulslp@yandex.ru");

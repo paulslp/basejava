@@ -19,11 +19,11 @@ public class Organization {
 
         this.homePage = new Link(name, url);
         personalDataList = new ArrayList<>();
-        addPersonalData(startDate,endDate,title,description);
+        addPersonalData(startDate, endDate, title, description);
     }
 
-    public void addPersonalData(LocalDate startDate, LocalDate endDate, String title, String description){
-        personalDataList.add(new PersonalData(startDate,endDate,title,description));
+    public void addPersonalData(LocalDate startDate, LocalDate endDate, String title, String description) {
+        personalDataList.add(new PersonalData(startDate, endDate, title, description));
     }
 
     @Override
@@ -46,14 +46,14 @@ public class Organization {
 
     @Override
     public String toString() {
-        String resultPersonalData="";
+        String resultPersonalData = "";
 
-        for (PersonalData persData: personalDataList){
-            resultPersonalData = resultPersonalData +persData.toString()+ ";";
+        for (PersonalData persData : personalDataList) {
+            resultPersonalData = resultPersonalData + persData.toString() + ";";
         }
         return "Organization{" +
                 "homePage=" + homePage + "," +
-                 resultPersonalData +
+                resultPersonalData +
                 '}';
     }
 
