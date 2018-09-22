@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * com.urise.webapp.model.Resume class
- */
+
 public class Resume implements Comparable<Resume> {
 
     // Unique identifier

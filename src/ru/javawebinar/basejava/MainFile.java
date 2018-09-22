@@ -5,10 +5,6 @@ import ru.javawebinar.basejava.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * gkislin
- * 21.07.2016
- */
 public class MainFile {
     public static void main(String[] args) throws IOException {
         String filePath = ".\\";

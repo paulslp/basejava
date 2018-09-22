@@ -3,11 +3,7 @@ package ru.javawebinar.basejava.model;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * gkislin
- * 14.07.2016
- */
-public class ListSection extends Section {
+public class ListSection implements Section {
     private final List<String> items;
 
     public ListSection(List<String> items) {
