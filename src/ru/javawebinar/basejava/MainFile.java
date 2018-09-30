@@ -50,7 +50,7 @@ public class MainFile {
                     directory = "Directory: " + file.getName();
                     indentation_old = indentation;
                     System.out.println(indentation + directory);
-                    indentation = indentation + String.format("%" + directory.length() + "s", "").replace(" ", "-");
+                    indentation = indentation + "  ";
                     printDirectoryDeeply(file, indentation);
                     indentation = indentation_old;
                 }

@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.Serialization.SerializationStrategyContext;
+import ru.javawebinar.basejava.Serialization.SerializationStrategyObjectStream;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -12,14 +14,10 @@ import java.util.Objects;
  * gkislin
  * 22.07.2016
  */
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private File directory;
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
-
-    protected abstract Resume doRead(InputStream is) throws IOException;
-
-    protected AbstractFileStorage(File directory) {
+    protected FileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
@@ -30,6 +28,18 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         this.directory = directory;
     }
 
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
+        strategyContext.setStrategy(new SerializationStrategyObjectStream());
+        strategyContext.executeDoWrite(r, os);
+    }
+
+    protected Resume doRead(InputStream is) throws IOException {
+        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
+        strategyContext.setStrategy(new SerializationStrategyObjectStream());
+        return strategyContext.executeDoRead(is);
+    }
+
     @Override
     public void clear() {
         File[] files = directory.listFiles();
@@ -37,6 +47,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             for (File file : files) {
                 doDelete(file);
             }
+        } else {
+            throw new StorageException("Directory read error", null);
         }
     }
 

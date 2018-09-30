@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.Serialization.SerializationStrategyContext;
+import ru.javawebinar.basejava.Serialization.SerializationStrategyObjectStream;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -10,11 +12,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
+import static java.lang.Math.toIntExact;
+
+public class PathStorage extends AbstractStorage<Path> {
     private Path directory;
+    private String uuid;
 
-    protected AbstractPathStorage(Path directory) {
+    protected PathStorage(Path directory) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
             throw new IllegalArgumentException(directory.getFileName().toString() + " is not directory or is not writable");
@@ -22,9 +28,17 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
         this.directory = directory;
     }
 
-    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
+    protected void doWrite(Resume r, OutputStream os) throws IOException {
+        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
+        strategyContext.setStrategy(new SerializationStrategyObjectStream());
+        strategyContext.executeDoWrite(r, os);
+    }
 
-    protected abstract Resume doRead(InputStream is) throws IOException;
+    protected Resume doRead(InputStream is) throws IOException {
+        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
+        strategyContext.setStrategy(new SerializationStrategyObjectStream());
+        return strategyContext.executeDoRead(is);
+    }
 
     @Override
     public void clear() {
@@ -38,7 +52,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     @Override
     public int size() {
         try {
-            return Files.list(directory).toArray().length;
+            return toIntExact(Files.list(directory).count());
         } catch (IOException e) {
             throw new StorageException("Directory size error", null);
         }
@@ -46,6 +60,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
 
     @Override
     protected Path getSearchKey(String uuid) {
+        this.uuid = uuid;
         return Paths.get(directory + "\\" + uuid);
     }
 
@@ -98,12 +113,9 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     protected List<Resume> doCopyAll() {
         List<Resume> list = new ArrayList<>();
         try {
-            Files.list(directory).forEach(path -> list.add(doGet(path)));
+            Files.list(directory).collect(Collectors.toList());
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (list == null) {
-            throw new StorageException("Directory read error", null);
+            throw new StorageException("Directory io error", null);
         }
         return list;
     }
