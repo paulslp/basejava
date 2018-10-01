@@ -1,21 +1,17 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.Serialization.SerializationStrategyContext;
-import ru.javawebinar.basejava.Serialization.SerializationStrategyObjectStream;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.serialization.SerializationStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * gkislin
- * 22.07.2016
- */
 public class FileStorage extends AbstractStorage<File> {
     private File directory;
+    private SerializationStrategy strategy;
 
     protected FileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
@@ -28,16 +24,16 @@ public class FileStorage extends AbstractStorage<File> {
         this.directory = directory;
     }
 
+    public void setStrategy(SerializationStrategy strategy) {
+        this.strategy = strategy;
+    }
+
     protected void doWrite(Resume r, OutputStream os) throws IOException {
-        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
-        strategyContext.setStrategy(new SerializationStrategyObjectStream());
-        strategyContext.executeDoWrite(r, os);
+        strategy.doWrite(r, os);
     }
 
     protected Resume doRead(InputStream is) throws IOException {
-        SerializationStrategyContext strategyContext = new SerializationStrategyContext();
-        strategyContext.setStrategy(new SerializationStrategyObjectStream());
-        return strategyContext.executeDoRead(is);
+        return strategy.doRead(is);
     }
 
     @Override
