@@ -1,6 +1,5 @@
 package ru.javawebinar.basejava.model;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -9,11 +8,14 @@ import java.util.Objects;
  * gkislin
  * 14.07.2016
  */
-public class ListSection implements Section, Serializable {
+public class ListSection implements Section {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<String> items;
+    private List<String> items;
+
+    public ListSection() {
+    }
 
     public ListSection(String... items) {
         this(Arrays.asList(items));

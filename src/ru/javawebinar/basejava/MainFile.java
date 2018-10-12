@@ -1,6 +1,8 @@
 package ru.javawebinar.basejava;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * gkislin
@@ -8,7 +10,7 @@ import java.io.File;
  */
 public class MainFile {
     public static void main(String[] args) {
-       /* String filePath = ".\\.gitignore";
+        String filePath = ".\\.gitignore";
 
         File file = new File(filePath);
         try {
@@ -31,31 +33,21 @@ public class MainFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-*/
-        // File dir = new File("./src/ru/javawebinar/basejava");
-        File dir = new File("./src/ru/javawebinar");
         printDirectoryDeeply(dir, "");
     }
 
-    public static void printDirectoryDeeply(File dir, String indentation) {
+    public static void printDirectoryDeeply(File dir, String offset) {
         File[] files = dir.listFiles();
-        String directory;
-        String indentation_old = "";
-        int inner = 0;
+
         if (files != null) {
             for (File file : files) {
                 if (file.isFile()) {
-                    System.out.println(indentation + "File: " + file.getName());
+                    System.out.println(offset + "F: " + file.getName());
                 } else if (file.isDirectory()) {
-                    directory = "Directory: " + file.getName();
-                    indentation_old = indentation;
-                    System.out.println(indentation + directory);
-                    indentation = indentation + "  ";
-                    printDirectoryDeeply(file, indentation);
-                    indentation = indentation_old;
+                    System.out.println(offset + "D: " + file.getName());
+                    printDirectoryDeeply(file, offset + "  ");
                 }
             }
-
         }
     }
 }
