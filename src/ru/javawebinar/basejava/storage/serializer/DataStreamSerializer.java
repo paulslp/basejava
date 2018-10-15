@@ -20,6 +20,8 @@ public class DataStreamSerializer implements StreamSerializer {
             dos.writeInt(contacts.size());
             writeCollection(dos, contacts.entrySet(), object -> {
                 Map.Entry<ContactType, String> entry = (Map.Entry<ContactType, String>) object;
+                System.out.println("name before write " + entry.getKey().name());
+                System.out.println("value before write " + entry.getValue());
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             });
@@ -51,7 +53,6 @@ public class DataStreamSerializer implements StreamSerializer {
                             } else {
                                 dos.writeUTF("");
                             }
-//    (int startYear, Month startMonth, int endYear, Month endMonth, String title, String description) {
                             writeCollection(dos, org.getPositions(), positionObject -> {
                                 Organization.Position pos = (Organization.Position) positionObject;
                                 dos.writeInt(pos.getStartDate().getYear());
@@ -95,15 +96,14 @@ public class DataStreamSerializer implements StreamSerializer {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
+            System.out.println(uuid);
+            System.out.println(fullName);
 
             int size = dis.readInt();
             System.out.println(size);
 
-            doActions(size, () -> {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            });
+            doActions(size, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
 
-            while (dis.available() > 0) {
                 SectionType sectionType;
                 sectionType = SectionType.valueOf(dis.readUTF());
 
@@ -129,17 +129,7 @@ public class DataStreamSerializer implements StreamSerializer {
                                     );
                         });
                         resume.addSection(sectionType, new OrganizationSection(organizationList));
-
-                        for (int i = 0; i < size; i++) {
-                            //    organizationList.add(readOrganization(dis));
-                        }
-
-
                 }
-
-            }
-
-
             return resume;
 
         }

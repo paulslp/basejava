@@ -1,5 +1,8 @@
 package ru.javawebinar.basejava;
 
+import ru.javawebinar.basejava.model.ContactType;
+import ru.javawebinar.basejava.model.Resume;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -36,8 +39,16 @@ public class MainString {
         }
 */
 
-        try (DataInputStream dis = new DataInputStream(new BufferedInputStream(Files.newInputStream(Paths.get("C:/projects/storage/uuid1"))))) {
+        try (DataInputStream dis = new DataInputStream(new BufferedInputStream(Files.newInputStream(Paths.get("C:/projects/basejava/storage/uuid1"))))) {
 
+            String uuid = dis.readUTF();
+            String fullName = dis.readUTF();
+            Resume resume = new Resume(uuid, fullName);
+
+            ContactType.valueOf("PHONE");
+
+            System.out.println(uuid);
+            System.out.println(fullName);
             int size = dis.readInt();
             System.out.println(size);
 
