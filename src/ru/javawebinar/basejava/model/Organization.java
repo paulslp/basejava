@@ -20,6 +20,7 @@ import static ru.javawebinar.basejava.util.DateUtil.of;
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
+
     private Link homePage;
     private List<Position> positions = new ArrayList<>();
 
@@ -96,6 +97,8 @@ public class Organization implements Serializable {
             this.title = title;
             this.description = description;
         }
+
+
 
         public LocalDate getStartDate() {
             return startDate;

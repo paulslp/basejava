@@ -1,8 +1,14 @@
 package ru.javawebinar.basejava;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class MainString {
-    public static void main(String[] args) {
-        String[] strArray = new String[]{"1", "2", "3", "4", "5"};
+    public static void main(String[] args) throws IOException {
+      /*  String[] strArray = new String[]{"1", "2", "3", "4", "5"};
 //        String result = "";
         StringBuilder sb = new StringBuilder();
         for (String str : strArray) {
@@ -14,5 +20,27 @@ public class MainString {
         String str3 = "c";
         String str2 = ("ab" + str3).intern();
         System.out.println(str1 == str2);
+*/
+     /*   DataInputStream dis = null;
+        try {
+            dis = new DataInputStream(new BufferedInputStream(Files.newInputStream(Paths.get("C:/projects/storage/uuid1"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            Resume resume = new Resume("uuid", "ff");
+        try {
+            int size = dis.readInt();
+            System.out.println(size);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+*/
+
+        try (DataInputStream dis = new DataInputStream(new BufferedInputStream(Files.newInputStream(Paths.get("C:/projects/storage/uuid1"))))) {
+
+            int size = dis.readInt();
+            System.out.println(size);
+
+        }
     }
 }

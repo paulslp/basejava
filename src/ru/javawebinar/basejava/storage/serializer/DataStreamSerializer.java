@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.storage.serializer;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,18 +51,19 @@ public class DataStreamSerializer implements StreamSerializer {
                             } else {
                                 dos.writeUTF("");
                             }
+//    (int startYear, Month startMonth, int endYear, Month endMonth, String title, String description) {
                             writeCollection(dos, org.getPositions(), positionObject -> {
                                 Organization.Position pos = (Organization.Position) positionObject;
+                                dos.writeInt(pos.getStartDate().getYear());
+                                dos.writeInt(pos.getStartDate().getMonth().getValue());
+                                dos.writeInt(pos.getEndDate().getYear());
+                                dos.writeInt(pos.getEndDate().getMonth().getValue());
                                 dos.writeUTF(pos.getTitle());
                                 if (pos.getDescription() != null) {
                                     dos.writeUTF(pos.getDescription());
                                 } else {
                                     dos.writeUTF("");
                                 }
-                                dos.writeUTF(pos.getStartDate().getMonth().toString());
-                                dos.writeUTF(String.valueOf(pos.getStartDate().getYear()));
-                                dos.writeUTF(pos.getEndDate().getMonth().toString());
-                                dos.writeUTF(String.valueOf(pos.getEndDate().getYear()));
                             });
                         });
                         break;
@@ -86,21 +88,20 @@ public class DataStreamSerializer implements StreamSerializer {
         public void write(Object object) throws IOException;
     }
 
-/*
-    public Organization readOrganization(DataInputStream dis) {
-
-        return null;
-    }*/
-
     @Override
     public Resume doRead(InputStream is) throws IOException {
+
         try (DataInputStream dis = new DataInputStream(is)) {
             String uuid = dis.readUTF();
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
 
             int size = dis.readInt();
-            doActions(size, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
+            System.out.println(size);
+
+            doActions(size, () -> {
+                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+            });
 
             while (dis.available() > 0) {
                 SectionType sectionType;
@@ -121,16 +122,12 @@ public class DataStreamSerializer implements StreamSerializer {
                         organizationList = readListObjects(dis, () -> {
                             return new Organization(new Link(dis.readUTF(), dis.readUTF()),
                                     (List<Organization.Position>) readListObjects(dis,()->{
-                                          return new Organization.Position();
+                                        return new Organization.Position(dis.readInt(), Month.of(dis.readInt())
+                                                , dis.readInt(), Month.of(dis.readInt())
+                                                , dis.readUTF(), dis.readUTF());
                                       })
                                     );
                         });
-/*
-                    public Organization(Link homePage, List<Organization.Position > positions) {
-                        this.homePage = homePage;
-                        this.positions = positions;
-                    }
-*/
                         resume.addSection(sectionType, new OrganizationSection(organizationList));
 
                         for (int i = 0; i < size; i++) {
@@ -144,6 +141,7 @@ public class DataStreamSerializer implements StreamSerializer {
 
 
             return resume;
+
         }
 
     }
