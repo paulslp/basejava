@@ -131,6 +131,7 @@ public abstract class AbstractStorageTest {
         assertGet(R1);
         assertGet(R2);
         assertGet(R3);
+
     }
 
     @Test(expected = NotExistStorageException.class)

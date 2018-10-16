@@ -17,11 +17,8 @@ public class DataStreamSerializer implements StreamSerializer {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
             Map<ContactType, String> contacts = r.getContacts();
-            dos.writeInt(contacts.size());
             writeCollection(dos, contacts.entrySet(), object -> {
                 Map.Entry<ContactType, String> entry = (Map.Entry<ContactType, String>) object;
-                System.out.println("name before write " + entry.getKey().name());
-                System.out.println("value before write " + entry.getValue());
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             });
@@ -93,17 +90,21 @@ public class DataStreamSerializer implements StreamSerializer {
     public Resume doRead(InputStream is) throws IOException {
 
         try (DataInputStream dis = new DataInputStream(is)) {
-            String uuid = dis.readUTF();
-            String fullName = dis.readUTF();
-            Resume resume = new Resume(uuid, fullName);
-            System.out.println(uuid);
-            System.out.println(fullName);
+
+            Resume resume = new Resume(dis.readUTF(), dis.readUTF());
 
             int size = dis.readInt();
-            System.out.println(size);
+            doActions(size, () -> {
+                String contactType = dis.readUTF();
+                String contactValue = dis.readUTF();
+                resume.addContact(ContactType.valueOf(contactType), contactValue);
 
-            doActions(size, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
-
+            });
+            size = dis.readInt();
+            if (size == 0) {
+                return resume;
+            }
+            for (int i = 0; i < size; i++) {
                 SectionType sectionType;
                 sectionType = SectionType.valueOf(dis.readUTF());
 
@@ -111,25 +112,28 @@ public class DataStreamSerializer implements StreamSerializer {
                     case PERSONAL:
                     case OBJECTIVE:
                         resume.addSection(sectionType, new TextSection(dis.readUTF()));
+                        break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
                         List<String> stringList = new ArrayList<>();
                         stringList = readListObjects(dis, dis::readUTF);
                         resume.addSection(sectionType, new ListSection(stringList));
+                        break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        List<Organization> organizationList = new ArrayList<>();
-                        organizationList = readListObjects(dis, () -> {
+                        List<Organization> organizationList = readListObjects(dis, () -> {
                             return new Organization(new Link(dis.readUTF(), dis.readUTF()),
-                                    (List<Organization.Position>) readListObjects(dis,()->{
+                                    (List<Organization.Position>) readListObjects(dis, () -> {
                                         return new Organization.Position(dis.readInt(), Month.of(dis.readInt())
                                                 , dis.readInt(), Month.of(dis.readInt())
                                                 , dis.readUTF(), dis.readUTF());
-                                      })
-                                    );
+                                    })
+                            );
                         });
                         resume.addSection(sectionType, new OrganizationSection(organizationList));
+                        break;
                 }
+            }
             return resume;
 
         }

@@ -64,10 +64,7 @@ public class Organization implements Serializable {
         return "Organization(" + homePage + "," + positions + ')';
     }
 
-    /**
-     * gkislin
-     * 28.07.2016
-     */
+
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable {
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -95,7 +92,11 @@ public class Organization implements Serializable {
             this.startDate = startDate;
             this.endDate = endDate;
             this.title = title;
-            this.description = description;
+            if ((description == null) || (description.equals(""))) {
+                this.description = null;
+            } else {
+                this.description = description;
+            }
         }
 
 
