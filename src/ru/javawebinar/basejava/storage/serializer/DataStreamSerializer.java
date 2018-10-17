@@ -66,7 +66,7 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    public <T> void writeCollection(DataOutputStream dos, Collection<T> collection, Writer<T> writer) throws IOException {
+    private <T> void writeCollection(DataOutputStream dos, Collection<T> collection, Writer<T> writer) throws IOException {
         dos.writeInt(collection.size());
         for (T item : collection) {
                 writer.write(item);
@@ -75,7 +75,7 @@ public class DataStreamSerializer implements StreamSerializer {
 
 
     private interface Writer<T> {
-        public void write(T object) throws IOException;
+        void write(T object) throws IOException;
     }
 
     @Override
@@ -131,7 +131,7 @@ public class DataStreamSerializer implements StreamSerializer {
         T readSectionItem() throws IOException;
     }
 
-    public <T> List<T> readListObjects(DataInputStream dis, Reader<T> reader) throws IOException {
+    private <T> List<T> readListObjects(DataInputStream dis, Reader<T> reader) throws IOException {
         int size = dis.readInt();
         List<T> listObject = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -145,7 +145,7 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
 
-    public void doActions(Integer countActions, Action action) throws IOException {
+    private void doActions(Integer countActions, Action action) throws IOException {
         for (int i = 0; i < countActions; i++) {
             action.doAction();
         }
