@@ -3,9 +3,9 @@ package ru.javawebinar.basejava;
 public class DeadLockExample {
 
 
-    static void method(Object objectA, Object objectB) {
+    static void method(String objectA, String objectB) {
         synchronized (objectA) {
-            System.out.println(Thread.currentThread().getName() + ":locked ObjectA");
+            System.out.println(Thread.currentThread().getName() + ":locked " + objectA);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -13,15 +13,15 @@ public class DeadLockExample {
             }
 
             synchronized (objectB) {
-                System.out.println(Thread.currentThread().getName() + ":locked ObjectB");
+                System.out.println(Thread.currentThread().getName() + ":locked " + objectA);
             }
         }
     }
 
     public static void main(String[] args) {
 
-        final Object objectA = new Object();
-        final Object objectB = new Object();
+        final String objectA = "objectA";
+        final String objectB = "objectB";
 
         Thread threadA = new Thread(() -> method(objectA, objectB));
         Thread threadB = new Thread(() -> method(objectB, objectA));
