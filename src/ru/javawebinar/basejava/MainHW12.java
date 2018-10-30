@@ -22,36 +22,47 @@ public class MainHW12 {
         List<Integer> result = oddOrEven(values2);
         System.out.println("oddOrEven...");
         result.stream().forEach(x-> System.out.println(x));
-
+/*
+        Stream.of(1, 2, 3, 4, 5, 6)
+                .flatMap(x -> {
+                    switch (x % 2) {
+                        case 0://.filter(x -> Math.abs(x % 2) ==
+                            return Stream.of(x);
+                        case 1:
+                            return Stream.of(x);
+                        case 2:
+                        default:
+                            return Stream.empty();
+                    }
+                })
+                .forEach(System.out::println);
+*/
     }
 
     static int minValue(int[] values) {
 
-        Integer[] integerValues = IntStream.of(values)
+        return IntStream.of(values)
                 .distinct()                            //get unique values
                 .boxed()                               //cast as Integer
                 .sorted(Comparator.reverseOrder())     //sorted by descending
-                .toArray(size -> new Integer[size]);   //convert to array
-
-        int[] gradesTen = IntStream.iterate(1, x -> x * 10)
-                .limit(integerValues.length)
-                .toArray();
-
-        int sum = IntStream.range(0, integerValues.length)
-                .map(x -> integerValues[x] * gradesTen[x])
-                .sum();
-
-        return sum;
+                .parallel()
+                .reduce(0,
+                        (x, y) -> x + y,
+                        (x, y) -> x + 10 * y);
     }
 
 
     static List<Integer> oddOrEven(List<Integer> integers) {
 
+        integers.stream().collect(
+                Collectors.collectingAndThen(
+                        Collectors.summingInt(value -> value),
+                        y -> ((y % 2) == 0) ? integers : 0));
+
+
+
         return integers.stream()
-                .filter(x -> Math.abs(x % 2) == integers.stream().collect(
-                        Collectors.collectingAndThen(
-                                Collectors.summingInt(value -> value),
-                                y -> ((y % 2) == 0) ? 1 : 0)))
+                .filter(x -> Math.abs(x % 2) == 0)
                 .collect(Collectors.toList());
 
 
