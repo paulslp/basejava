@@ -16,14 +16,14 @@ public class MainHW12 {
 
         List<Integer> values2 = new ArrayList<>();
         values2.add(-4);
-        values2.add(0);
+        values2.add(-1);
         values2.add(77);
         values2.add(8);
         List<Integer> result = oddOrEven(values2);
         System.out.println("oddOrEven...");
         result.stream().forEach(x-> System.out.println(x));
-/*
-        Stream.of(1, 2, 3, 4, 5, 6)
+
+     /*   Stream.of(1, 2, 3, 4, 5, 6)
                 .flatMap(x -> {
                     switch (x % 2) {
                         case 0://.filter(x -> Math.abs(x % 2) ==
@@ -53,16 +53,10 @@ public class MainHW12 {
 
 
     static List<Integer> oddOrEven(List<Integer> integers) {
-
-        integers.stream().collect(
-                Collectors.collectingAndThen(
-                        Collectors.summingInt(value -> value),
-                        y -> ((y % 2) == 0) ? integers : 0));
-
-
+        System.out.println(integers.stream().mapToInt(i -> i).sum() % 2);
 
         return integers.stream()
-                .filter(x -> Math.abs(x % 2) == 0)
+                .filter(x -> Math.abs(x % 2) != (integers.stream().mapToInt(i -> i).sum() % 2))
                 .collect(Collectors.toList());
 
 
