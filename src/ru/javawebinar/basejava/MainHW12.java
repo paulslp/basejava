@@ -20,7 +20,7 @@ public class MainHW12 {
         values2.add(8);
         List<Integer> result = oddOrEven(values2);
         System.out.println("oddOrEven...");
-        result.stream().forEach(x-> System.out.println(x));
+        result.forEach(x-> System.out.println(x));
 
     }
 
@@ -29,7 +29,7 @@ public class MainHW12 {
         return IntStream.of(values)
                 .distinct()
                 .sorted()
-                .reduce((x, y) -> 10 * x + y).getAsInt();
+                .reduce(0,(x, y) -> 10 * x + y);
     }
 
 
