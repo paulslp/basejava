@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/**
- * gkislin
- * 21.07.2016
- */
 public class MainFile {
     public static void main(String[] args) {
         String filePath = ".\\.gitignore";

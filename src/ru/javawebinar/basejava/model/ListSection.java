@@ -4,11 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * gkislin
- * 14.07.2016
- */
-public class ListSection implements Section {
+public class ListSection extends Section {
 
     private static final long serialVersionUID = 1L;
 
