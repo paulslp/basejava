@@ -9,29 +9,33 @@ import java.sql.SQLException;
 
 public class SqlHelper<T> {
 
-    SqlAction<T> sqlAction;
-    ConnectionFactory connectionFactory;
-    String sqlQuery;
+    private ConnectionFactory connectionFactory;
+    private String sqlQuery;
 
-
-    public SqlHelper(SqlAction<T> sqlAction, ConnectionFactory connectionFactory, String sqlQuery) {
-        this.sqlAction = sqlAction;
+    public SqlHelper( ConnectionFactory connectionFactory, String sqlQuery) {
         this.connectionFactory = connectionFactory;
         this.sqlQuery = sqlQuery;
-
     }
 
-    public T callSQLMethod(ConnectionFactory connectionFactory, String sqlQuery) {
 
+    public T callSQLFunction(SqlAction<T> sqlAction) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
-            return sqlAction.doAction();
+            return sqlAction.doAction(ps);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    public void callSQLMethod(SqlAction sqlAction) {
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlQuery)) {
+             sqlAction.doAction(ps);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
 
 
     }
-
 
 }
