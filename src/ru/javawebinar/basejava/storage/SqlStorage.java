@@ -1,31 +1,30 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.sql.ConnectionFactory;
+import ru.javawebinar.basejava.sql.SqlHelper;
 
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage {
-    public final ConnectionFactory connectionFactory;
+    public final SqlHelper sqlHelper;
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+        sqlHelper = new SqlHelper(dbUrl, dbUser, dbPassword);
     }
 
     @Override
     public void clear() {
-        new SqlHelper<>(connectionFactory, "DELETE FROM resume").callSQLMethod((ps) -> ps.execute());
+        sqlHelper.callSQLFunction("DELETE FROM resume", (ps) -> ps.execute());
     }
 
     @Override
     public Resume get(String uuid) {
-
-        return new SqlHelper<Resume>(connectionFactory, "SELECT * FROM resume r WHERE r.uuid =?").callSQLFunction((ps) -> {
+        return sqlHelper.callSQLFunction("SELECT * FROM resume r WHERE r.uuid =?", ps -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -37,36 +36,43 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        new SqlHelper<>(connectionFactory, "UPDATE resume SET full_name=? WHERE uuid=?").callSQLMethod((ps) -> {
+        sqlHelper.callSQLFunction("UPDATE resume SET full_name=? WHERE uuid=?", ps -> {
             ps.setString(1, r.getFullName());
             ps.setString(2, r.getUuid());
-            ps.execute();
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException(r.getUuid());
+            }
             return null;
         });
     }
 
     @Override
     public void save(Resume r) {
-        new SqlHelper<>(connectionFactory, "INSERT INTO resume (uuid, full_name) VALUES (?,?)").callSQLMethod((ps) -> {
+        sqlHelper.callSQLFunction("INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
             ps.setString(1, r.getUuid());
             ps.setString(2, r.getFullName());
-            ps.execute();
+
+            if (ps.executeUpdate() == 0) {
+                throw new ExistStorageException(r.getUuid());
+            }
             return null;
         });
     }
 
     @Override
     public void delete(String uuid) {
-        new SqlHelper<>(connectionFactory, "DELETE FROM resume r WHERE r.uuid =?").callSQLMethod((ps) -> {
+        sqlHelper.callSQLFunction("DELETE FROM resume r WHERE r.uuid =?", ps -> {
             ps.setString(1, uuid);
-            ps.execute();
+            if (ps.executeUpdate() == 0) {
+                throw new NotExistStorageException(uuid);
+            }
             return null;
         });
     }
 
     @Override
     public List<Resume> getAllSorted() {
-        return new SqlHelper<List<Resume>>(connectionFactory, "SELECT trim(uuid) as uuid,full_name FROM resume r ").callSQLFunction((ps) -> {
+        return sqlHelper.callSQLFunction("SELECT trim(uuid) as uuid,full_name FROM resume r ORDER BY full_name", ps -> {
             List<Resume> resumeList = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
@@ -83,7 +89,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public int size() {
-        return new SqlHelper<Integer>(connectionFactory, "SELECT count(*) as resume_count FROM resume r ").callSQLFunction((ps) -> {
+        return sqlHelper.callSQLFunction("SELECT count(*) as resume_count FROM resume r ", ps -> {
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 throw new StorageException("Result set is empty");
