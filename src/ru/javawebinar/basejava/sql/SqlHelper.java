@@ -24,13 +24,13 @@ public class SqlHelper {
             return sqlAction.doAction(ps);
         } catch (SQLException e) {
             if (e instanceof PSQLException) {
-                throw new ExistStorageException(null);
+                if (e.getSQLState().equals("23505")) {
+                    throw new ExistStorageException(null);
+                }
             }
             throw new StorageException(e);
         }
     }
-
-
 
 
 }

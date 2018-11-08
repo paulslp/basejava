@@ -75,12 +75,10 @@ public class SqlStorage implements Storage {
         return sqlHelper.callSQLFunction("SELECT trim(uuid) as uuid,full_name FROM resume r ORDER BY full_name", ps -> {
             List<Resume> resumeList = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                throw new StorageException("Resume list is empty");
-            }
-            do {
+
+            while (rs.next()) {
                 resumeList.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
-            } while (rs.next());
+            }
 
             return resumeList;
         });
