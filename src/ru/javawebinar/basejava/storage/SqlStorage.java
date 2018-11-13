@@ -6,13 +6,12 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
+
+    private static final Comparator<Resume> RESUME_COMPARATOR = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
@@ -102,35 +101,39 @@ public class SqlStorage implements Storage {
         });
     }
 
+
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> resumeList = sqlHelper.execute("SELECT * FROM resume r ORDER BY full_name,uuid", ps -> {
+        HashMap<String, Resume> resumeMap = sqlHelper.execute("SELECT * FROM resume r ORDER BY full_name,uuid", ps -> {
             ResultSet rs = ps.executeQuery();
-            List<Resume> resumes = new ArrayList<>();
+            HashMap<String, Resume> resumes = new HashMap<>();
             while (rs.next()) {
-                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
+                resumes.put(rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
             }
             return resumes;
         });
 
-        for (Resume r : resumeList) {
-            sqlHelper.execute("" +
-                            "    SELECT * FROM contact c " +
-                            "     WHERE c.resume_uuid =? ",
-                    ps -> {
-                        ps.setString(1, r.getUuid());
-                        ResultSet rs = ps.executeQuery();
-                        if (!rs.next()) {
-                            return null;
-                        }
-                        do {
-                            String value = rs.getString("value");
-                            ContactType type = ContactType.valueOf(rs.getString("type"));
-                            r.addContact(type, value);
-                        } while (rs.next());
+
+        sqlHelper.execute("" +
+                        "    SELECT * FROM contact c " +
+                        "     ORDER BY c.resume_uuid ",
+                ps -> {
+                    ResultSet rs = ps.executeQuery();
+                    if (!rs.next()) {
                         return null;
-                    });
-        }
+                    }
+
+                    do {
+                        String uuid = rs.getString("resume_uuid");
+                        String value = rs.getString("value");
+                        ContactType type = ContactType.valueOf(rs.getString("type"));
+                        resumeMap.get(uuid).addContact(type, value);
+                    } while (rs.next());
+                    return null;
+                });
+
+        List<Resume> resumeList = new ArrayList<>(resumeMap.values());
+        resumeList.sort(RESUME_COMPARATOR);
         return resumeList;
     }
 
@@ -142,7 +145,8 @@ public class SqlStorage implements Storage {
         });
     }
 
-    public void insertContactsFromResumeObject(Connection conn, Resume resume) throws SQLException {
+
+    private void insertContactsFromResumeObject(Connection conn, Resume resume) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : resume.getContacts().entrySet()) {
                 ps.setString(1, resume.getUuid());
