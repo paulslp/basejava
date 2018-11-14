@@ -103,17 +103,17 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSorted() {
 
-        TreeMap<String, Resume> resumes = new TreeMap<>();
+        LinkedHashMap<String, Resume> resumes = new LinkedHashMap<>();
         sqlHelper.transactionalExecute(conn -> {
 
                     try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume r ORDER BY full_name,uuid")) {
                         ResultSet rs = ps.executeQuery();
 
                         while (rs.next()) {
-                            resumes.put(rs.getString("full_name") + rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
+                            resumes.put(rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
                         }
                     }
-                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact c LEFT JOIN resume r ON c.resume_uuid = r.uuid")) {
+                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact c ")) {
                         ResultSet rs = ps.executeQuery();
 
                         if (!rs.next()) {
@@ -121,11 +121,10 @@ public class SqlStorage implements Storage {
                         }
 
                         do {
-                            String full_name = rs.getString("full_name");
                             String uuid = rs.getString("resume_uuid");
                             String value = rs.getString("value");
                             ContactType type = ContactType.valueOf(rs.getString("type"));
-                            resumes.get(full_name + uuid).addContact(type, value);
+                            resumes.get(uuid).addContact(type, value);
                         } while (rs.next());
                     }
 
