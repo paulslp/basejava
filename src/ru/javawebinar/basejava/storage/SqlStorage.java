@@ -11,8 +11,6 @@ import java.util.*;
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
 
-    private static final Comparator<Resume> RESUME_COMPARATOR = (o1, o2) -> o1.getFullName().compareTo(o2.getFullName());
-
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
@@ -112,7 +110,7 @@ public class SqlStorage implements Storage {
                         ResultSet rs = ps.executeQuery();
 
                         while (rs.next()) {
-                            resumes.put(rs.getString("full_name")+rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
+                            resumes.put(rs.getString("full_name") + rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
                         }
                     }
                     try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact c LEFT JOIN resume r ON c.resume_uuid = r.uuid")) {
@@ -127,7 +125,7 @@ public class SqlStorage implements Storage {
                             String uuid = rs.getString("resume_uuid");
                             String value = rs.getString("value");
                             ContactType type = ContactType.valueOf(rs.getString("type"));
-                            resumes.get(full_name+uuid).addContact(type, value);
+                            resumes.get(full_name + uuid).addContact(type, value);
                         } while (rs.next());
                     }
 
@@ -135,9 +133,7 @@ public class SqlStorage implements Storage {
                 }
         );
 
-        List<Resume> resumeList = new ArrayList<>(resumes.values());
-        resumeList.sort(RESUME_COMPARATOR);
-        return resumeList;
+        return new ArrayList<>(resumes.values());
     }
 
     @Override
