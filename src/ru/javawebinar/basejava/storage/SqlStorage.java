@@ -104,35 +104,38 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        HashMap<String, Resume> resumeMap = sqlHelper.execute("SELECT * FROM resume r ORDER BY full_name,uuid", ps -> {
-            ResultSet rs = ps.executeQuery();
-            HashMap<String, Resume> resumes = new HashMap<>();
-            while (rs.next()) {
-                resumes.put(rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
-            }
-            return resumes;
-        });
 
+        TreeMap<String, Resume> resumes = new TreeMap<>();
+        sqlHelper.transactionalExecute(conn -> {
 
-        sqlHelper.execute("" +
-                        "    SELECT * FROM contact c " +
-                        "     ORDER BY c.resume_uuid ",
-                ps -> {
-                    ResultSet rs = ps.executeQuery();
-                    if (!rs.next()) {
-                        return null;
+                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume r ORDER BY full_name,uuid")) {
+                        ResultSet rs = ps.executeQuery();
+
+                        while (rs.next()) {
+                            resumes.put(rs.getString("full_name")+rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
+                        }
+                    }
+                    try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact c LEFT JOIN resume r ON c.resume_uuid = r.uuid")) {
+                        ResultSet rs = ps.executeQuery();
+
+                        if (!rs.next()) {
+                            return null;
+                        }
+
+                        do {
+                            String full_name = rs.getString("full_name");
+                            String uuid = rs.getString("resume_uuid");
+                            String value = rs.getString("value");
+                            ContactType type = ContactType.valueOf(rs.getString("type"));
+                            resumes.get(full_name+uuid).addContact(type, value);
+                        } while (rs.next());
                     }
 
-                    do {
-                        String uuid = rs.getString("resume_uuid");
-                        String value = rs.getString("value");
-                        ContactType type = ContactType.valueOf(rs.getString("type"));
-                        resumeMap.get(uuid).addContact(type, value);
-                    } while (rs.next());
                     return null;
-                });
+                }
+        );
 
-        List<Resume> resumeList = new ArrayList<>(resumeMap.values());
+        List<Resume> resumeList = new ArrayList<>(resumes.values());
         resumeList.sort(RESUME_COMPARATOR);
         return resumeList;
     }
