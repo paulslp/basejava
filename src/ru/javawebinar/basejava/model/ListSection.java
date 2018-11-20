@@ -32,7 +32,7 @@ public class ListSection extends Section {
             return "";
         }
         else{
-         return this.items.stream().reduce("", (x, y) -> (new StringBuilder(x).append("\\n").append(y)).toString()).substring(2);
+            return String.join("\\n",this.items);
         }
     }
 
