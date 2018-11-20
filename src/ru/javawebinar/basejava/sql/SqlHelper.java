@@ -27,11 +27,6 @@ public class SqlHelper {
     }
 
     public <T> T transactionalExecute(SqlTransaction<T> executor) {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new StorageException(e);
-        }
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);

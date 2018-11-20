@@ -10,11 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.javawebinar.basejava.model.SectionType.ACHIEVEMENT;
-import static ru.javawebinar.basejava.model.SectionType.QUALIFICATIONS;
 
-// TODO implement Section (except OrganizationSection)
-// TODO Join and split ListSection by `\n`
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
 
@@ -110,12 +106,11 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-
         Map<String, Resume> resumes = new LinkedHashMap<>();
+
         sqlHelper.transactionalExecute(conn -> {
                     try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume r ORDER BY full_name,uuid")) {
                         ResultSet rs = ps.executeQuery();
-
                         while (rs.next()) {
                             resumes.put(rs.getString("uuid"), new Resume(rs.getString("uuid"), rs.getString("full_name")));
                         }
@@ -193,37 +188,20 @@ public class SqlStorage implements Storage {
             }
         }
     }
-//
-//    private String sectionToString(String typeSection, Map.Entry<SectionType, Section> e) {
-//
-//        String sectionValue = null;
-//        switch (typeSection) {
-//            case "PERSONAL":
-//            case "OBJECTIVE":
-//                sectionValue = ((TextSection) e.getValue()).getContent();
-//                break;
-//            case "ACHIEVEMENT":
-//            case "QUALIFICATIONS":
-//                sectionValue = ((ListSection) e.getValue()).getItems().stream().reduce("", (x, y) -> (new StringBuilder(x).append("\\n").append(y)).toString()).substring(2);
-//        }
-//        return sectionValue;
-//    }
 
 
-    private void deleteContacts(Connection conn, Resume r) {
-        sqlHelper.execute("DELETE  FROM contact WHERE resume_uuid=?", ps -> {
+    private void deleteContacts(Connection conn, Resume r) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE  FROM contact WHERE resume_uuid=?")) {
             ps.setString(1, r.getUuid());
             ps.execute();
-            return null;
-        });
+        }
     }
 
-    private void deleteSections(Connection conn, Resume r) {
-        sqlHelper.execute("DELETE  FROM section WHERE resume_uuid=?", ps -> {
+    private void deleteSections(Connection conn, Resume r) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE  FROM section WHERE resume_uuid=?")) {
             ps.setString(1, r.getUuid());
             ps.execute();
-            return null;
-        });
+        }
     }
 
     private void addContact(ResultSet rs, Resume r) throws SQLException {
@@ -247,8 +225,11 @@ public class SqlStorage implements Storage {
             case "PERSONAL":
             case "OBJECTIVE":
                 return new TextSection(sectionValue);
+            case "ACHIEVEMENT":
+            case "QUALIFICATIONS":
+                return new ListSection((sectionValue).split("\\\\n"));
             default:
-                return new ListSection((sectionValue).replace("\\n", ";").split(";"));
+                return null;
         }
     }
 }

@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 import ru.javawebinar.basejava.storage.SqlStorage;
@@ -20,13 +21,12 @@ public class ResumeServlet extends HttpServlet {
 
     @Override
     public void init() {
-        try (InputStream is = getServletContext().getResourceAsStream("WEB-INF\\config\\resumes.properties")) {
-            Properties props = new Properties();
-            props.load(is);
-            storage = new SqlStorage(props.getProperty("db.url"), props.getProperty("db.user"), props.getProperty("db.password"));
-        } catch (IOException e) {
-            throw new IllegalStateException("Invalid config file resumes.properties");
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new StorageException(e);
         }
+        storage = (SqlStorage) Config.get().getStorage();
 
         storage.save(new Resume("Resume 1"));
         storage.save(new Resume("Resume 2"));
