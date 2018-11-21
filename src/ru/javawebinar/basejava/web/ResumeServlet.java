@@ -1,85 +1,107 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.exception.StorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.sql.SqlHelper;
-import ru.javawebinar.basejava.storage.SqlStorage;
+import ru.javawebinar.basejava.model.SectionType;
+import ru.javawebinar.basejava.storage.Storage;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.sql.DriverManager;
-import java.util.List;
-import java.util.Properties;
+import java.io.IOException;
 
 public class ResumeServlet extends HttpServlet {
 
-    private SqlStorage storage;
-
+    private Storage storage; // = Config.get().getStorage();
 
     @Override
-    public void init() {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new StorageException(e);
-        }
-        storage = (SqlStorage) Config.get().getStorage();
-
-        storage.save(new Resume("Resume 1"));
-        storage.save(new Resume("Resume 2"));
-        storage.save(new Resume("Resume 3"));
-
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        storage = Config.get().getStorage();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String uuid = request.getParameter("uuid");
+        String fullName = request.getParameter("fullName");
 
+        String action = request.getParameter("action");
+
+        if (action == null) {
+            request.setAttribute("resumes", storage.getAllSorted());
+            request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
+            return;
+        }
+        if (action.equals("update")) {
+            Resume r = storage.get(uuid);
+            r.setFullName(fullName);
+            for (ContactType type : ContactType.values()) {
+                String value = request.getParameter(type.name());
+                if (value != null && value.trim().length() != 0) {
+                    r.addContact(type, value);
+                } else {
+                    r.getContacts().remove(type);
+                }
+            }
+            for (SectionType type : SectionType.values()) {
+                String value = request.getParameter(type.name());
+                if (value != null && value.trim().length() != 0) {
+                    r.addSection(type, type.htmlToSection(value));
+                } else {
+                    r.getContacts().remove(type);
+                }
+            }
+            storage.update(r);
+        } else if (action.equals("insert")) {
+            Resume r = new Resume(uuid, fullName);
+            for (ContactType type : ContactType.values()) {
+                String value = request.getParameter(type.name());
+                r.addContact(type, value);
+            }
+            for (SectionType type : SectionType.values()) {
+                String value = request.getParameter(type.name());
+                r.addSection(type, type.htmlToSection(value));
+            }
+            storage.save(r);
+        } else {
+            throw new IllegalArgumentException("Action " + action + " is illegal");
+        }
+        response.sendRedirect("resume");
     }
-
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-//        response.setHeader("Content-Type", "text/html; charset=UTF-8");
-        response.setContentType("text/html; charset=UTF-8");
-
-        response.getWriter().write(generateMainPageContent() + generateAllResumeHtmlTable());
-    }
-
-    private String generateMainPageContent() {
-        return "        <!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <link rel=\"stylesheet\" href=\"css/style.css\">\n" +
-                "    <title>Курс JavaSE + Web.</title>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "<header>Приложение вебинара <a href=\"http://javawebinar.ru/basejava/\" target=\"_blank\">Практика Java. Разработка Web\n" +
-                "        приложения.\"</a></header>\n" +
-                "                <h1>Курс JavaSE + Web</h1>\n" +
-                "<footer>Приложение вебинара <a href=\"http://javawebinar.ru/basejava/\" target=\"_blank\">Практика Java. Разработка Web\n" +
-                "        приложения.\"</a></footer>\n" +
-                "                </body>\n" +
-                "</html>\n<br>";
-    }
-
-
-    private String generateAllResumeHtmlTable() {
-        String htmlTable = "<table border=\"1\"><tr><td><b>Resume_uuid</b></td><td><b>FullName</b></td></tr>";
-
-        List<Resume> resumeList = storage.getAllSorted();
-        for (Resume r : resumeList) {
-            htmlTable = htmlTable + "<tr><td>" + r.getUuid() + "</td>" + "<td>" + r.getFullName() + "</td></tr>";
-
+        String uuid = request.getParameter("uuid");
+        String action = request.getParameter("action");
+        if (action == null) {
+            request.setAttribute("resumes", storage.getAllSorted());
+            request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
+            return;
         }
-        return htmlTable + "</table>";
-    }
+        Resume r;
+        switch (action) {
+            case "create":
+                r = new Resume("");
+                request.setAttribute("resume", r);
+                request.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(request, response);
+                return;
+            case "delete":
+                storage.delete(uuid);
+                response.sendRedirect("resume");
+                return;
+            case "view":
+            case "edit":
+                r = storage.get(uuid);
+                request.setAttribute("resume", r);
+                request.getRequestDispatcher(
+                        ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
+                ).forward(request, response);
+                return;
+            default:
+                throw new IllegalArgumentException("Action " + action + " is illegal");
+        }
 
-    private String generateResumeHtmlTable(String uuid) {
-
-        return "";
     }
 }
