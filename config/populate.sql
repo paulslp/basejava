@@ -4,4 +4,6 @@ INSERT INTO resume (uuid, full_name) VALUES
   ('dd0a70d1-5ed3-479a-b452-d5e04f21ca73', 'Name3');
 
 
-select * from section
+select * from section where resume_uuid='ea34280d-bb8b-46bb-b4f8-9704ffc405b4'
+
+delete from resume;

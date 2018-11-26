@@ -40,4 +40,6 @@ public class TextSection extends Section {
     public int hashCode() {
         return content.hashCode();
     }
+
+
 }

@@ -13,8 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static ru.javawebinar.basejava.util.CheckUtil.getStringChecking;
 import static ru.javawebinar.basejava.util.DateUtil.NOW;
 import static ru.javawebinar.basejava.util.DateUtil.of;
+import static ru.javawebinar.basejava.util.CheckUtil.getDateChecking;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
@@ -64,6 +66,16 @@ public class Organization implements Serializable {
         return "Organization(" + homePage + "," + positions + ')';
     }
 
+    public String toHtmlView() {
+        return  "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlView() + "</td>"
+                + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
+    }
+
+    public String toHtmlEdit(String uuid,SectionType sectionType,int organizationIndex) {
+        return  "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlEdit(uuid,sectionType,organizationIndex) + "</td>"
+                + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
+    }
+
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable {
@@ -98,7 +110,6 @@ public class Organization implements Serializable {
                 this.description = description;
             }
         }
-
 
 
         public LocalDate getStartDate() {
@@ -136,6 +147,13 @@ public class Organization implements Serializable {
         @Override
         public String toString() {
             return "Position(" + startDate + ',' + endDate + ',' + title + ',' + description + ')';
+        }
+
+
+
+
+        public String toHtml() {
+            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td></tr><tr><td></td>";
         }
     }
 }

@@ -60,4 +60,11 @@ public class Link implements Serializable {
         result = 31 * result + (url != null ? url.hashCode() : 0);
         return result;
     }
+
+    public String toHtmlView() {
+    return    "<a href=\""+this.url+"\">"+this.name+"</a>";
+    }
+    public String toHtmlEdit(String uuid,SectionType sectionType, int organizationIndex) {
+        return    "<a href=\"resume?uuid="+uuid+"&action=editOrganization&sectionType="+sectionType.name()+"&organizationIndex="+organizationIndex+"\"><img src=\"img/pencil.png\"></a><a href=\""+this.url+"\">"+this.name+"</a>";
+    }
 }

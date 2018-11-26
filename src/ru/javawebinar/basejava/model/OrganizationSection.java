@@ -12,7 +12,8 @@ public class OrganizationSection extends Section {
 
     private List<Organization> organizations;
 
-    public OrganizationSection() {}
+    public OrganizationSection() {
+    }
 
     public OrganizationSection(Organization... organizations) {
         this(Arrays.asList(organizations));
@@ -47,4 +48,6 @@ public class OrganizationSection extends Section {
     public String toString() {
         return organizations.toString();
     }
+
+
 }

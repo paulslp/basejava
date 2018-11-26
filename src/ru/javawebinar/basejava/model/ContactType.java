@@ -7,13 +7,13 @@ public enum ContactType {
     SKYPE("Skype") {
         @Override
         public String toHtml0(String value) {
-            return getTitle() + ": " + toLink("skype:" + value, value);
+            return toLink("skype:" + value, value);
         }
     },
     MAIL("Почта") {
         @Override
         public String toHtml0(String value) {
-            return getTitle() + ": " + toLink("mailto:" + value, value);
+            return toLink("mailto:" + value, value);
         }
     },
     LINKEDIN("Профиль LinkedIn") {
@@ -52,7 +52,7 @@ public enum ContactType {
     }
 
     protected String toHtml0(String value) {
-        return title + ": " + value;
+        return value;
     }
 
     public String toHtml(String value) {

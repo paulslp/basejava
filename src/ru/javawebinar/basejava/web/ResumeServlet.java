@@ -1,9 +1,7 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.model.SectionType;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 
 import javax.servlet.ServletConfig;
@@ -12,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -29,47 +29,95 @@ public class ResumeServlet extends HttpServlet {
         String fullName = request.getParameter("fullName");
 
         String action = request.getParameter("action");
-
+        Resume r;
         if (action == null) {
             request.setAttribute("resumes", storage.getAllSorted());
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
-        if (action.equals("update")) {
-            Resume r = storage.get(uuid);
-            r.setFullName(fullName);
-            for (ContactType type : ContactType.values()) {
-                String value = request.getParameter(type.name());
-                if (value != null && value.trim().length() != 0) {
+        switch (action) {
+            case "update":
+                r = storage.get(uuid);
+                r.setFullName(fullName);
+                for (ContactType type : ContactType.values()) {
+                    String value = request.getParameter(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        r.addContact(type, value);
+                    } else {
+                        r.getContacts().remove(type);
+                    }
+                }
+                for (SectionType type : SectionType.values()) {
+                    String value = request.getParameter(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        r.addSection(type, type.htmlToSection(value));
+                    } else {
+                        r.getContacts().remove(type);
+                    }
+                }
+                storage.update(r);
+                response.sendRedirect("resume");
+                break;
+            case "insert":
+                r = new Resume(uuid, fullName);
+                for (ContactType type : ContactType.values()) {
+                    String value = request.getParameter(type.name());
                     r.addContact(type, value);
-                } else {
-                    r.getContacts().remove(type);
                 }
-            }
-            for (SectionType type : SectionType.values()) {
-                String value = request.getParameter(type.name());
-                if (value != null && value.trim().length() != 0) {
+                for (SectionType type : SectionType.values()) {
+                    String value = request.getParameter(type.name());
                     r.addSection(type, type.htmlToSection(value));
-                } else {
-                    r.getContacts().remove(type);
                 }
-            }
-            storage.update(r);
-        } else if (action.equals("insert")) {
-            Resume r = new Resume(uuid, fullName);
-            for (ContactType type : ContactType.values()) {
-                String value = request.getParameter(type.name());
-                r.addContact(type, value);
-            }
-            for (SectionType type : SectionType.values()) {
-                String value = request.getParameter(type.name());
-                r.addSection(type, type.htmlToSection(value));
-            }
-            storage.save(r);
-        } else {
-            throw new IllegalArgumentException("Action " + action + " is illegal");
+                storage.save(r);
+                response.sendRedirect("resume");
+                break;
+            case "insertOrganization":
+                r = storage.get(uuid);
+                SectionType sectionType = SectionType.valueOf(request.getParameter("sectionType"));
+
+                OrganizationSection section = (OrganizationSection) r.getSection(sectionType);
+                Organization organization = new Organization(request.getParameter("name"), request.getParameter("link"),
+                        new Organization.Position(LocalDate.parse(request.getParameter("startDate")), LocalDate.parse(request.getParameter("endDate"))
+                                , request.getParameter("title"), request.getParameter("description")));
+                if (section == null) {
+                    r.addSection(sectionType, new OrganizationSection(organization));
+                } else {
+                    List<Organization> organizationList = section.getOrganizations();
+                    organizationList.add(organization);
+                }
+                storage.update(r);
+                request.setAttribute("resume", r);
+                request.setAttribute("sectionType", sectionType);
+                request.getRequestDispatcher("/WEB-INF/jsp/addOrganization.jsp").forward(request, response);
+                break;
+            case "updateOrganization":
+                r = storage.get(uuid);
+                Integer organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
+                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
+                section = (OrganizationSection) r.getSection(sectionType);
+                organization = new Organization(request.getParameter("name"), request.getParameter("link"),
+                        new Organization.Position(LocalDate.parse(request.getParameter("startDate")), LocalDate.parse(request.getParameter("endDate"))
+                                , request.getParameter("title"), request.getParameter("description")));
+                if (section == null) {
+                    r.addSection(sectionType, new OrganizationSection(organization));
+                } else {
+                    section.getOrganizations().set(organizationIndex, organization);
+                }
+                storage.update(r);
+
+                request.setAttribute("resume", r);
+                request.setAttribute("sectionType", sectionType);
+                request.setAttribute("organizationIndex", organizationIndex);
+                request.setAttribute("organization", organization);
+
+                request.getRequestDispatcher("/WEB-INF/jsp/editOrganization.jsp").forward(request, response);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Action " + action + " is illegal");
         }
-        response.sendRedirect("resume");
+
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
@@ -99,6 +147,33 @@ public class ResumeServlet extends HttpServlet {
                         ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
                 ).forward(request, response);
                 return;
+            case "addEXPERIENCE":
+                r = storage.get(uuid);
+                request.setAttribute("resume", r);
+                request.setAttribute("sectionType", SectionType.EXPERIENCE);
+                request.getRequestDispatcher("/WEB-INF/jsp/addOrganization.jsp")
+                        .forward(request, response);
+                return;
+            case "addEDUCATION":
+                r = storage.get(uuid);
+                request.setAttribute("resume", r);
+                request.setAttribute("sectionType", SectionType.EDUCATION);
+                request.getRequestDispatcher("/WEB-INF/jsp/addOrganization.jsp")
+                        .forward(request, response);
+                return;
+            case "editOrganization":
+                r = storage.get(uuid);
+                SectionType sectionType = SectionType.valueOf(request.getParameter("sectionType"));
+                Integer organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
+                Organization organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
+                request.setAttribute("resume", r);
+                request.setAttribute("sectionType", sectionType);
+                request.setAttribute("organizationIndex", organizationIndex);
+                request.setAttribute("organization", organization);
+
+                request.getRequestDispatcher("/WEB-INF/jsp/editOrganization.jsp")
+                        .forward(request, response);
+                break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
