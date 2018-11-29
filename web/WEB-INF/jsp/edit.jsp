@@ -57,7 +57,8 @@
                     </c:when>
 
                     <c:when test="${(sectionType.name().equals(\"EXPERIENCE\"))||(sectionType.name().equals(\"EDUCATION\"))}">
-                        ${sectionType.getTitle()} <a href="resume?uuid=${resume.uuid}&action=add${sectionType.name()}"><img
+                        ${sectionType.getTitle()} <a
+                            href="resume?uuid=${resume.uuid}&action=addOrganization&sectionType=${sectionType.name()}"><img
                             src="img/add.png" name="img"${sectionType.name()}></a>
                         ${sectionType.toHtmlEditOrganization(resume.uuid,resume.getSection(sectionType))}<br/>
                     </c:when>

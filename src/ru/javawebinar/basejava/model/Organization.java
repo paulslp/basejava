@@ -66,13 +66,32 @@ public class Organization implements Serializable {
         return "Organization(" + homePage + "," + positions + ')';
     }
 
+    public void removePosition(int positionIndex) {
+        positions.remove(positionIndex);
+    }
+
+    public String toHtmlPosition(String uuid, SectionType sectionType, int organizationIndex) {
+        String htmlText = "<table>";
+        int i = 0;
+        for (Position position : positions) {
+            if (i > 0) {
+                htmlText = htmlText + "<tr><td><a href=\"resume?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(i) + "\"><img src=\"img/delete.png\"></a></td>"
+                        + "<td><a href=\"resume?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(i) + "\"><img src=\"img/pencil.png\"></a></td>"
+                        + "<td>" + getDateChecking(position.startDate) + "</td><td>" + getDateChecking(position.endDate) + "</td><td>" + getStringChecking(position.title) + "</td><td>" + getStringChecking(position.description) + "</td></tr>";
+            }
+            i++;
+        }
+
+        return htmlText + "</table>";
+    }
+
     public String toHtmlView() {
-        return  "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlView() + "</td>"
+        return "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlView() + "</td>"
                 + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
     }
 
-    public String toHtmlEdit(String uuid,SectionType sectionType,int organizationIndex) {
-        return  "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlEdit(uuid,sectionType,organizationIndex) + "</td>"
+    public String toHtmlEdit(String uuid, SectionType sectionType, int organizationIndex) {
+        return "<tr><td>" + homePage.toHtmlEdit(uuid, sectionType, organizationIndex) + "</td>"
                 + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
     }
 
@@ -150,10 +169,8 @@ public class Organization implements Serializable {
         }
 
 
-
-
         public String toHtml() {
-            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td></tr><tr><td></td>";
+            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td></tr><tr><td></td><td></td><td></td>";
         }
     }
 }

@@ -55,7 +55,7 @@ public enum SectionType {
 
         @Override
         public String toHtmlEditOrganization0(String uuid, Section value) {
-            String stringHtml = "<table cellspacing=10px>" + "<tr><th>Организация</th><th>Дата начала</th><th>Дата конца</th><th>Должность</th><th>Обязанности</th></tr>";
+            String stringHtml = "<table cellspacing=10px>" + "<tr><th></th><th></th><th>Организация</th><th>Дата начала</th><th>Дата конца</th><th>Должность</th><th>Обязанности</th></tr>";
             List<Organization> organizationList = ((OrganizationSection) value).getOrganizations();
             int i = 0;
             for (Organization organization : organizationList) {
@@ -84,7 +84,7 @@ public enum SectionType {
 
         @Override
         public String toHtmlEditOrganization0(String uuid, Section value) {
-            String stringHtml = "<table cellspacing=10px>" + "<tr><th>Организация</th><th>Дата начала</th><th>Дата конца</th><th>Должность</th><th>Обязанности</th></tr>";
+            String stringHtml = "<table cellspacing=10px>" + "<tr><th></th><th></th><th>Организация</th><th>Дата начала</th><th>Дата конца</th><th>Должность</th><th>Обязанности</th></tr>";
             List<Organization> organizationList = ((OrganizationSection) value).getOrganizations();
             int i = 0;
             for (Organization organization : organizationList) {

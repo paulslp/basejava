@@ -62,9 +62,13 @@ public class Link implements Serializable {
     }
 
     public String toHtmlView() {
-    return    "<a href=\""+this.url+"\">"+this.name+"</a>";
+        return "<a href=\"" + this.url + "\">" + this.name + "</a>";
     }
-    public String toHtmlEdit(String uuid,SectionType sectionType, int organizationIndex) {
-        return    "<a href=\"resume?uuid="+uuid+"&action=editOrganization&sectionType="+sectionType.name()+"&organizationIndex="+organizationIndex+"\"><img src=\"img/pencil.png\"></a><a href=\""+this.url+"\">"+this.name+"</a>";
+
+    public String toHtmlEdit(String uuid, SectionType sectionType, int organizationIndex) {
+        return "<a href=\"resume?uuid=" + uuid + "&action=deleteOrganization&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex
+                + "\"><img src=\"img/delete.png\"></a></td><td><a href=\"resume?uuid=" + uuid + "&action=editOrganization&sectionType=" + sectionType.name()
+                + "&organizationIndex=" + organizationIndex + "\"><img src=\"img/pencil.png\"></a></td><td valign=\"top\" align=\"right\"><a href=\"" + this.url + "\">"
+                + this.name + "</a>";
     }
 }

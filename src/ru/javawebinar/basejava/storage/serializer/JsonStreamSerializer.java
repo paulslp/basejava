@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage.serializer;
 
+import ru.javawebinar.basejava.model.Organization;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.util.JsonParser;
 
@@ -14,6 +15,7 @@ public class JsonStreamSerializer implements StreamSerializer {
             JsonParser.write(r, writer);
         }
     }
+
 
     @Override
     public Resume doRead(InputStream is) throws IOException {
