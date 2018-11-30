@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 public class ResumeServlet extends HttpServlet {
 
@@ -69,107 +69,62 @@ public class ResumeServlet extends HttpServlet {
                     r.addContact(type, value);
                 }
                 for (SectionType type : SectionType.values()) {
-                    String value = request.getParameter(type.name());
-                    r.addSection(type, type.htmlToSection(value));
+                    if ((!type.name().equals("EXPERIENCE")) && (!type.name().equals("EDUCATION"))) {
+                        String value = request.getParameter(type.name());
+                        r.addSection(type, type.htmlToSection(value));
+                    }
                 }
                 storage.save(r);
                 response.sendRedirect("resume");
                 break;
             case "insertOrganization":
-                r = storage.get(uuid);
-                SectionType sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-
-                OrganizationSection section = (OrganizationSection) r.getSection(sectionType);
-                Organization organization = new Organization(request.getParameter("name"), request.getParameter("link"),
-                        new Organization.Position(LocalDate.parse(request.getParameter("startDate")), LocalDate.parse(request.getParameter("endDate"))
-                                , request.getParameter("title"), request.getParameter("description")));
-                if (section == null) {
-                    r.addSection(sectionType, new OrganizationSection(organization));
-                } else {
-                    List<Organization> organizationList = section.getOrganizations();
-                    organizationList.add(organization);
-                }
-                storage.update(r);
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organization", organization);
-                request.setAttribute("buttonValue", "edit");
-                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
-                break;
             case "updateOrganization":
                 r = storage.get(uuid);
-
-                Integer organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
-                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-                section = (OrganizationSection) r.getSection(sectionType);
-                String positions_next = request.getParameter("positions_next").replace("''", "\"");
-                List<Organization.Position> positionList = new ArrayList<>();
-                positionList.add(new Organization.Position(LocalDate.parse(request.getParameter("startDate")), LocalDate.parse(request.getParameter("endDate"))
-                        , request.getParameter("title"), request.getParameter("description")));
-
-                List<Organization.Position> positionNextList = Arrays.asList(JsonParser.read(positions_next, Organization.Position[].class));
-                positionNextList.forEach(position -> positionList.add(position));
-                organization = new Organization(new Link(request.getParameter("name"), request.getParameter("link")), positionList);
-
-                if (section == null) {
-                    r.addSection(sectionType, new OrganizationSection(organization));
+                SectionType sectionType = SectionType.valueOf(request.getParameter("sectionType"));
+                OrganizationSection section = (OrganizationSection) r.getSection(sectionType);
+                Organization organization;
+                if (action.equals("insertOrganization")) {
+                    organization = new Organization(request.getParameter("name"), request.getParameter("link"));
+                    if (section == null) {
+                        r.addSection(sectionType, new OrganizationSection(organization));
+                    } else {
+                        List<Organization> organizationList = section.getOrganizations();
+                        organizationList.add(organization);
+                    }
                 } else {
+                    Integer organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
+                    String positions = request.getParameter("positions").replace("''", "\"");
+                    List<Organization.Position> positionList = Arrays.asList(JsonParser.read(positions, Organization.Position[].class));
+                    organization = new Organization(new Link(request.getParameter("name"), request.getParameter("link")), positionList);
                     section.getOrganizations().set(organizationIndex, organization);
                 }
                 storage.update(r);
-
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("organization", organization);
-                request.setAttribute("positions_next", positions_next);
-                request.setAttribute("buttonValue", "edit");
-                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+                forwardToResume(request, response, r, "update");
                 break;
             case "insertPosition":
+            case "updatePosition":
                 r = storage.get(uuid);
-
-                organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
+                int organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
                 sectionType = SectionType.valueOf(request.getParameter("sectionType"));
                 section = (OrganizationSection) r.getSection(sectionType);
                 String organizationJson = request.getParameter("organizationJson").replace("''", "\"");
                 organization = JsonParser.read(organizationJson, Organization.class);
-                organization.getPositions().add(new Organization.Position(LocalDate.parse(request.getParameter("startDate"))
-                        , LocalDate.parse(request.getParameter("endDate"))
-                        , request.getParameter("title")
-                        , request.getParameter("description")
-                ));
-                if (section == null) {
-                    r.addSection(sectionType, new OrganizationSection(organization));
+
+                if (action.equals("insertPosition")) {
+                    organization.getPositions().add(new Organization.Position(LocalDate.parse(request.getParameter("startDate"))
+                            , LocalDate.parse(request.getParameter("endDate"))
+                            , request.getParameter("title")
+                            , request.getParameter("description")
+                    ));
                 } else {
-                    section.getOrganizations().set(organizationIndex, organization);
+                    int positionIndex = Integer.valueOf(request.getParameter("positionIndex"));
+                    organization.getPositions().set(positionIndex, new Organization.Position(LocalDate.parse(request.getParameter("startDate"))
+                            , LocalDate.parse(request.getParameter("endDate"))
+                            , request.getParameter("title")
+                            , request.getParameter("description")
+                    ));
                 }
-                storage.update(r);
-
-                organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-                positions_next = JsonParser.write(organization.getPositions().subList(1, organization.getPositions().size()));
-
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("organization", organization);
-                request.setAttribute("positions_next", positions_next);
-                request.setAttribute("buttonValue", "updateOrganization");
-                request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp").forward(request, response);
-                break;
-            case "updatePosition":
-                r = storage.get(uuid);
-                organizationIndex = Integer.valueOf(request.getParameter("organizationIndex"));
-                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-                section = (OrganizationSection) r.getSection(sectionType);
-                organizationJson = request.getParameter("organizationJson").replace("''", "\"");
-                organization = JsonParser.read(organizationJson, Organization.class);
-                int positionIndex = Integer.valueOf(request.getParameter("positionIndex"));
-                organization.getPositions().set(positionIndex, new Organization.Position(LocalDate.parse(request.getParameter("startDate"))
-                        , LocalDate.parse(request.getParameter("endDate"))
-                        , request.getParameter("title")
-                        , request.getParameter("description")
-                ));
+                ;
 
                 if (section == null) {
                     r.addSection(sectionType, new OrganizationSection(organization));
@@ -177,15 +132,14 @@ public class ResumeServlet extends HttpServlet {
                     section.getOrganizations().set(organizationIndex, organization);
                 }
                 storage.update(r);
-
                 organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-                positions_next = JsonParser.write(organization.getPositions().subList(1, organization.getPositions().size()));
+                String positions = JsonParser.write(organization.getPositions());
 
                 request.setAttribute("resume", r);
                 request.setAttribute("sectionType", sectionType);
                 request.setAttribute("organizationIndex", organizationIndex);
                 request.setAttribute("organization", organization);
-                request.setAttribute("positions_next", positions_next);
+                request.setAttribute("positions", positions);
                 request.setAttribute("buttonValue", "updateOrganization");
                 request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp").forward(request, response);
                 break;
@@ -206,122 +160,96 @@ public class ResumeServlet extends HttpServlet {
         }
         Resume r;
         switch (action) {
-            case "create":
-                r = new Resume("");
-                request.setAttribute("resume", r);
-                request.getRequestDispatcher("/WEB-INF/jsp/create.jsp").forward(request, response);
-                return;
             case "delete":
                 storage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
-            case "view":
+            case "create":
+                r = new Resume("");
+                forwardToResume(request, response, r, "insert");
+                return;
             case "edit":
                 r = storage.get(uuid);
-                request.setAttribute("resume", r);
-                request.getRequestDispatcher(
-                        ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
-                ).forward(request, response);
+                forwardToResume(request, response, r, "update");
                 return;
-            case "addOrganization":
-                r = storage.get(uuid);
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", SectionType.valueOf(request.getParameter("sectionType")));
-                request.setAttribute("organization", new Organization("", "", new Organization.Position(LocalDate.now(), LocalDate.now(), "", "")));
-                request.setAttribute("buttonValue", "insertOrganization");
-                request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp")
-                        .forward(request, response);
-                return;
-            case "editOrganization":
+            case "deleteOrganization":
                 r = storage.get(uuid);
                 SectionType sectionType = SectionType.valueOf(request.getParameter("sectionType"));
                 int organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
-                Organization organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-
-                String positions_next = JsonParser.write(organization.getPositions().subList(1, organization.getPositions().size()));
-
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("organization", organization);
-                request.setAttribute("positions_next", positions_next);
-                request.setAttribute("buttonValue", "updateOrganization");
-                request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp")
-                        .forward(request, response);
-                break;
-            case "deleteOrganization":
-                r = storage.get(uuid);
-                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-                organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
                 ((OrganizationSection) r.getSection(sectionType)).getOrganizations().remove(organizationIndex);
                 storage.update(r);
-                request.setAttribute("resume", r);
-                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp"
-                ).forward(request, response);
+                forwardToResume(request, response, r, "update");
                 return;
+            case "view":
+                r = storage.get(uuid);
+                request.setAttribute("resume", r);
+                request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
+                return;
+            case "addOrganization":
+            case "editOrganization":
             case "deletePosition":
                 r = storage.get(uuid);
-                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-                organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
-                int positionIndex = Integer.parseInt(request.getParameter("positionIndex"));
-                ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex).getPositions().remove(positionIndex);
-                storage.update(r);
-
-                organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-                positions_next = JsonParser.write(organization.getPositions().subList(1, organization.getPositions().size()));
-
                 request.setAttribute("resume", r);
+                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
                 request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("organization", organization);
-                request.setAttribute("positions_next", positions_next);
-                request.setAttribute("buttonValue", "updateOrganization");
+                if (action.equals("addOrganization")) {
+                    request.setAttribute("buttonValue", "insertOrganization");
+                    request.setAttribute("organization", new Organization("", ""));
+                } else {
+                    request.setAttribute("buttonValue", "updateOrganization");
+                    int orgIndex = Integer.parseInt(request.getParameter("organizationIndex"));
 
-                request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp"
-                ).forward(request, response);
+                    if (action.equals("deletePosition")) {
+                        int positionIndex = Integer.parseInt(request.getParameter("positionIndex"));
+                        ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(orgIndex).getPositions().remove(positionIndex);
+                        storage.update(r);
+                    }
+                    Organization organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(orgIndex);
+                    String positions = JsonParser.write(organization.getPositions());
+                    request.setAttribute("organizationIndex", orgIndex);
+                    request.setAttribute("organization", organization);
+                    request.setAttribute("positions", positions);
+                }
+                request.getRequestDispatcher("/WEB-INF/jsp/organization.jsp").forward(request, response);
                 return;
             case "addPosition":
-                r = storage.get(uuid);
-                sectionType = SectionType.valueOf(request.getParameter("sectionType"));
-                organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
-                organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-                Organization.Position position = new Organization.Position(LocalDate.now(), LocalDate.now(), "", "");
-                String organizationJson = JsonParser.write(organization);
-
-                request.setAttribute("resume", r);
-                request.setAttribute("sectionType", sectionType);
-                request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("position", position);
-                request.setAttribute("organizationJson", organizationJson);
-                request.setAttribute("buttonValue", "insertPosition");
-
-                request.getRequestDispatcher("/WEB-INF/jsp/position.jsp"
-                ).forward(request, response);
-                return;
             case "editPosition":
+                uuid = request.getParameter("uuid");
                 r = storage.get(uuid);
                 sectionType = SectionType.valueOf(request.getParameter("sectionType"));
                 organizationIndex = Integer.parseInt(request.getParameter("organizationIndex"));
-                positionIndex = Integer.parseInt(request.getParameter("positionIndex"));
-                organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
-                position = organization.getPositions().get(positionIndex);
-                organizationJson = JsonParser.write(organization);
-
+                Organization organization = ((OrganizationSection) r.getSection(sectionType)).getOrganizations().get(organizationIndex);
+                String organizationJson = JsonParser.write(organization);
+                String buttonValue = action.equals("addPosition") ? "insertPosition" : "updatePosition";
                 request.setAttribute("resume", r);
                 request.setAttribute("sectionType", sectionType);
                 request.setAttribute("organizationIndex", organizationIndex);
-                request.setAttribute("position", position);
-                request.setAttribute("positionIndex", positionIndex);
                 request.setAttribute("organizationJson", organizationJson);
-                request.setAttribute("buttonValue", "updatePosition");
+                request.setAttribute("buttonValue", buttonValue);
 
-                request.getRequestDispatcher("/WEB-INF/jsp/position.jsp"
-                ).forward(request, response);
+                Organization.Position position;
+                if (buttonValue.equals("insertPosition")) {
+                    position = new Organization.Position(LocalDate.now(), LocalDate.now(), "", "");
+                } else {
+                    int positionIndex = Integer.parseInt(request.getParameter("positionIndex"));
+                    request.setAttribute("positionIndex", positionIndex);
+                    position = organization.getPositions().get(positionIndex);
+                }
+
+                request.setAttribute("position", position);
+                request.getRequestDispatcher("/WEB-INF/jsp/position.jsp").forward(request, response);
                 return;
-
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
 
     }
+
+    private void forwardToResume(HttpServletRequest request, HttpServletResponse response, Resume r, String buttonValue) throws ServletException, IOException {
+        request.setAttribute("resume", r);
+        request.setAttribute("buttonValue", buttonValue);
+        request.getRequestDispatcher("/WEB-INF/jsp/resume.jsp").forward(request, response);
+    }
+
+
 }

@@ -5,7 +5,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
-    <%--<jsp:useBean id="organization" type="ru.javawebinar.basejava.model.Organization" scope="request"/>--%>
     <jsp:useBean id="position" type="ru.javawebinar.basejava.model.Organization.Position" scope="request"/>
     <jsp:useBean id="buttonValue" type="java.lang.String" scope="request"/>
     <jsp:useBean id="sectionType" type="ru.javawebinar.basejava.model.SectionType" scope="request"/>

@@ -9,13 +9,6 @@
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 
-    <%--<script>--%>
-    <%--window.onload = function() {--%>
-    <%--alert( 'Документ и все ресурсы загружены' );--%>
-    <%--document.getElementsByName("imgEDUCATION");--%>
-    <%--image.hidden=true;--%>
-    <%--};--%>
-    <%--</script>--%>
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
@@ -56,10 +49,11 @@
                         </dd>
                     </c:when>
 
-                    <c:when test="${(sectionType.name().equals(\"EXPERIENCE\"))||(sectionType.name().equals(\"EDUCATION\"))}">
+                    <c:when test="${((sectionType.name().equals(\"EXPERIENCE\"))||(sectionType.name().equals(\"EDUCATION\")))&&(buttonValue.equals(\"update\"))}">
                         ${sectionType.getTitle()} <a
                             href="resume?uuid=${resume.uuid}&action=addOrganization&sectionType=${sectionType.name()}"><img
                             src="img/add.png" name="img"${sectionType.name()}></a>
+
                         ${sectionType.toHtmlEditOrganization(resume.uuid,resume.getSection(sectionType))}<br/>
                     </c:when>
                 </c:choose>
@@ -67,7 +61,16 @@
             </dl>
         </c:forEach>
         <hr>
-        <button type="submit" name="action" value="update">Сохранить</button>
+        <button type="submit" name="action" value="${buttonValue}">
+            <c:choose>
+                <c:when test="${buttonValue.equals(\"update\")}">
+                    Изменить
+                </c:when>
+                <c:when test="${buttonValue.equals(\"insert\")}">
+                    Добавить
+                </c:when>
+            </c:choose>
+        </button>
         <button onclick="window.history.back()">Отменить</button>
     </form>
 </section>

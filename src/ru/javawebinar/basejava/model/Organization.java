@@ -66,23 +66,21 @@ public class Organization implements Serializable {
         return "Organization(" + homePage + "," + positions + ')';
     }
 
-    public void removePosition(int positionIndex) {
-        positions.remove(positionIndex);
-    }
 
-    public String toHtmlPosition(String uuid, SectionType sectionType, int organizationIndex) {
-        String htmlText = "<table>";
-        int i = 0;
-        for (Position position : positions) {
-            if (i > 0) {
-                htmlText = htmlText + "<tr><td><a href=\"resume?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(i) + "\"><img src=\"img/delete.png\"></a></td>"
-                        + "<td><a href=\"resume?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(i) + "\"><img src=\"img/pencil.png\"></a></td>"
-                        + "<td>" + getDateChecking(position.startDate) + "</td><td>" + getDateChecking(position.endDate) + "</td><td>" + getStringChecking(position.title) + "</td><td>" + getStringChecking(position.description) + "</td></tr>";
+    public String toHtmlPositions(String uuid, SectionType sectionType, int organizationIndex) {
+        if (positions == null) {
+            return "";
+        } else {
+            String htmlText = "<table>";
+            int positionIndex = 0;
+
+            for (Position position : positions) {
+                htmlText = htmlText + "<tr>" + position.toHtmlImgTd(uuid, sectionType, organizationIndex, positionIndex) + position.toHtmlTr() + "</tr>";
+                positionIndex++;
             }
-            i++;
+            return htmlText + "</table>";
         }
 
-        return htmlText + "</table>";
     }
 
     public String toHtmlView() {
@@ -168,9 +166,17 @@ public class Organization implements Serializable {
             return "Position(" + startDate + ',' + endDate + ',' + title + ',' + description + ')';
         }
 
+        public String toHtmlImgTd(String uuid, SectionType sectionType, int organizationIndex, int positionIndex) {
+            return "<td><a href=\"resume?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/delete.png\"></a></td>"
+                    + "<td><a href=\"resume?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/pencil.png\"></a></td>";
+        }
+
+        public String toHtmlTr() {
+            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td>";
+        }
 
         public String toHtml() {
-            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td></tr><tr><td></td><td></td><td></td>";
+            return this.toHtmlTr() + "</tr><tr><td></td><td></td><td></td>";
         }
     }
 }
