@@ -7,6 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
+    <jsp:useBean id="buttonValue" type="java.lang.String" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 
 </head>
@@ -51,7 +52,7 @@
 
                     <c:when test="${((sectionType.name().equals(\"EXPERIENCE\"))||(sectionType.name().equals(\"EDUCATION\")))&&(buttonValue.equals(\"update\"))}">
                         ${sectionType.getTitle()} <a
-                            href="resume?uuid=${resume.uuid}&action=addOrganization&sectionType=${sectionType.name()}"><img
+                            href="organization?uuid=${resume.uuid}&action=addOrganization&sectionType=${sectionType.name()}"><img
                             src="img/add.png" name="img"${sectionType.name()}></a>
 
                         ${sectionType.toHtmlEditOrganization(resume.uuid,resume.getSection(sectionType))}<br/>
@@ -62,14 +63,7 @@
         </c:forEach>
         <hr>
         <button type="submit" name="action" value="${buttonValue}">
-            <c:choose>
-                <c:when test="${buttonValue.equals(\"update\")}">
-                    Изменить
-                </c:when>
-                <c:when test="${buttonValue.equals(\"insert\")}">
-                    Добавить
-                </c:when>
-            </c:choose>
+            ${buttonValue.equals("update")?"Изменить":"Добавить"}
         </button>
         <button onclick="window.history.back()">Отменить</button>
     </form>

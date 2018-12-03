@@ -167,8 +167,8 @@ public class Organization implements Serializable {
         }
 
         public String toHtmlImgTd(String uuid, SectionType sectionType, int organizationIndex, int positionIndex) {
-            return "<td><a href=\"resume?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/delete.png\"></a></td>"
-                    + "<td><a href=\"resume?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/pencil.png\"></a></td>";
+            return "<td><a href=\"organization?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/delete.png\"></a></td>"
+                    + "<td><a href=\"position?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/pencil.png\"></a></td>";
         }
 
         public String toHtmlTr() {

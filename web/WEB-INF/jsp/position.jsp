@@ -16,7 +16,7 @@
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<form method="post" action="resume" enctype="application/x-www-form-urlencoded">
+<form method="post" action="position" enctype="application/x-www-form-urlencoded">
     <input type="hidden" name="sectionType" value="${sectionType.name()}">
     <input type="hidden" name="uuid" value="${resume.uuid}">
     <input type="hidden" name="organizationIndex" value="${organizationIndex}">
@@ -41,18 +41,11 @@
         <dd><input type="text" name="description" size=50 value="${position.description}"></dd>
     </dl>
     <button type="submit" name="action" value="${buttonValue}">
-        <c:choose>
-            <c:when test="${buttonValue.equals(\"updatePosition\")}">
-                Изменить
-            </c:when>
-            <c:when test="${buttonValue.equals(\"insertPosition\")}">
-                Добавить
-            </c:when>
-        </c:choose>
+        ${buttonValue.equals("updatePosition")?"Изменить":"Добавить"}
     </button>
 
     <button onclick="window.history.back()">Отменить</button>
-    <a href="resume?uuid=${resume.uuid}&action=editOrganization&sectionType=${sectionType}&organizationIndex=${organizationIndex}">Вернуться
+    <a href="organization?uuid=${resume.uuid}&action=editOrganization&sectionType=${sectionType}&organizationIndex=${organizationIndex}">Вернуться
         к редактированию организации</a>
 </form>
 <jsp:include page="fragments/footer.jsp"/>

@@ -4,6 +4,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
+
+
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <jsp:useBean id="organization" type="ru.javawebinar.basejava.model.Organization" scope="request"/>
     <jsp:useBean id="buttonValue" type="java.lang.String" scope="request"/>
@@ -17,7 +19,7 @@
 </head>
 <body>
 <jsp:include page="fragments/header.jsp"/>
-<form method="post" action="resume" enctype="application/x-www-form-urlencoded">
+<form method="post" action="organization" enctype="application/x-www-form-urlencoded">
     <section>
         <input type="hidden" name="sectionType" value="${sectionType.name()}">
         <input type="hidden" name="uuid" value="${resume.uuid}">
@@ -33,14 +35,7 @@
         </dl>
 
         <button type="submit" name="action" value="${buttonValue}">
-            <c:choose>
-                <c:when test="${buttonValue.equals(\"updateOrganization\")}">
-                    Изменить
-                </c:when>
-                <c:when test="${buttonValue.equals(\"insertOrganization\")}">
-                    Добавить
-                </c:when>
-            </c:choose>
+            ${buttonValue.equals("updateOrganization")?"Изменить":"Добавить"}
         </button>
         <button onclick="window.history.back()">Отменить</button>
         <a href="resume?uuid=${resume.uuid}&action=edit">Вернуться к редактированию резюме</a>
@@ -49,7 +44,7 @@
     <section>
         <dl>
             <c:if test="${buttonValue.equals(\"updateOrganization\")}">
-                <a href="resume?uuid=${resume.uuid}&action=addPosition&sectionType=${sectionType.name()}&organizationIndex=${organizationIndex}"><img
+                <a href="position?uuid=${resume.uuid}&action=addPosition&sectionType=${sectionType.name()}&organizationIndex=${organizationIndex}"><img
                         src="img/add.png"></a>
             </c:if>
         </dl>

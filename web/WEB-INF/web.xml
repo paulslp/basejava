@@ -8,9 +8,25 @@
         <servlet-name>resumeServlet</servlet-name>
         <servlet-class>ru.javawebinar.basejava.web.ResumeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>organizationServlet</servlet-name>
+        <servlet-class>ru.javawebinar.basejava.web.OrganizationServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>positionServlet</servlet-name>
+        <servlet-class>ru.javawebinar.basejava.web.PositionServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>resumeServlet</servlet-name>
         <url-pattern>/resume</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>organizationServlet</servlet-name>
+        <url-pattern>/organization</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>positionServlet</servlet-name>
+        <url-pattern>/position</url-pattern>
     </servlet-mapping>
 
 </web-app>
