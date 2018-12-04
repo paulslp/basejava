@@ -13,15 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static ru.javawebinar.basejava.util.CheckUtil.getStringChecking;
 import static ru.javawebinar.basejava.util.DateUtil.NOW;
 import static ru.javawebinar.basejava.util.DateUtil.of;
-import static ru.javawebinar.basejava.util.CheckUtil.getDateChecking;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public static final Organization EMPTY = new Organization("", "", Position.EMPTY);
 
     private Link homePage;
     private List<Position> positions = new ArrayList<>();
@@ -37,7 +36,6 @@ public class Organization implements Serializable {
         this.homePage = homePage;
         this.positions = positions;
     }
-
 
     public Link getHomePage() {
         return homePage;
@@ -66,36 +64,14 @@ public class Organization implements Serializable {
         return "Organization(" + homePage + "," + positions + ')';
     }
 
-
-    public String toHtmlPositions(String uuid, SectionType sectionType, int organizationIndex) {
-        if (positions == null) {
-            return "";
-        } else {
-            String htmlText = "<table>";
-            int positionIndex = 0;
-
-            for (Position position : positions) {
-                htmlText = htmlText + "<tr>" + position.toHtmlImgTd(uuid, sectionType, organizationIndex, positionIndex) + position.toHtmlTr() + "</tr>";
-                positionIndex++;
-            }
-            return htmlText + "</table>";
-        }
-
-    }
-
-    public String toHtmlView() {
-        return "<tr><td valign=\"top\" align=\"right\">" + homePage.toHtmlView() + "</td>"
-                + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
-    }
-
-    public String toHtmlEdit(String uuid, SectionType sectionType, int organizationIndex) {
-        return "<tr><td>" + homePage.toHtmlEdit(uuid, sectionType, organizationIndex) + "</td>"
-                + positions.stream().map(position -> position.toHtml()).reduce("", (acc, x) -> acc + x);
-    }
-
-
+    /**
+     * gkislin
+     * 28.07.2016
+     */
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable {
+        public static final Position EMPTY = new Position();
+
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate startDate;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -121,13 +97,8 @@ public class Organization implements Serializable {
             this.startDate = startDate;
             this.endDate = endDate;
             this.title = title;
-            if ((description == null) || (description.equals(""))) {
-                this.description = null;
-            } else {
-                this.description = description;
-            }
+            this.description = description == null ? "" : description;
         }
-
 
         public LocalDate getStartDate() {
             return startDate;
@@ -164,19 +135,6 @@ public class Organization implements Serializable {
         @Override
         public String toString() {
             return "Position(" + startDate + ',' + endDate + ',' + title + ',' + description + ')';
-        }
-
-        public String toHtmlImgTd(String uuid, SectionType sectionType, int organizationIndex, int positionIndex) {
-            return "<td><a href=\"organization?uuid=" + uuid + "&action=deletePosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/delete.png\"></a></td>"
-                    + "<td><a href=\"position?uuid=" + uuid + "&action=editPosition&sectionType=" + sectionType.name() + "&organizationIndex=" + organizationIndex + "&positionIndex=" + String.valueOf(positionIndex) + "\"><img src=\"img/pencil.png\"></a></td>";
-        }
-
-        public String toHtmlTr() {
-            return "<td>" + getDateChecking(startDate) + "</td><td>" + getDateChecking(endDate) + "</td><td>" + getStringChecking(title) + "</td><td>" + getStringChecking(description) + "</td>";
-        }
-
-        public String toHtml() {
-            return this.toHtmlTr() + "</tr><tr><td></td><td></td><td></td>";
         }
     }
 }

@@ -5,7 +5,6 @@ import org.junit.Test;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.TextSection;
-import ru.javawebinar.basejava.util.JsonParser;
 
 import static ru.javawebinar.basejava.TestData.R1;
 
